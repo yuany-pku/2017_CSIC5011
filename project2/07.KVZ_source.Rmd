@@ -1,0 +1,108 @@
+---
+title: "Karate club"
+author: "Esther Visser"
+date: "3 november 2017"
+output: html_document
+---
+```{r}
+setwd("~/Universiteit/Master/Mathematical_introduction_to_data_science")
+```
+
+```{r}
+library(R.matlab)
+mat<-readMat("karate.mat")
+table<-mat$A
+```
+
+```{r}
+d<-function(n){rowSums(table)[n]}
+D<- diag(d(1:34))
+Dinv<-diag(1/d(1:34))
+P<- Dinv %*% table
+```
+As rowSums(P)=1 for all rows, this defines a chain, by just, if you are in a point i, then you take the ith row and you go to person j with probability P(i,j)
+stationary distribution:
+```{r}
+pi<-c(d(1:34))
+as.vector(t(P)%*% pi)==pi
+```
+Now part 3, see notes page 123. First we define the laplacion and the second eigenvector.
+```{r}
+lap<-matrix(nrow=34,ncol=34)
+for(i in 1:34){
+  for(j in 1:34){
+    if(i==j){
+      lap[i,j]<-1
+    } else{
+    if(table[i,j]!=0){
+      lap[i,j]<--1/sqrt(d(i)*d(j))
+    } else{
+      lap[i,j]<-0
+    }}
+  }}
+eigen<-eigen(lap)$vectors[,2]
+sqrt(solve(D))%*%eigen
+```
+
+Now we find the cut by solving the equation in the lecturenotes (which we have to make lowerdimensional as 2 values of q are already given)
+```{r}
+M<-diag(34)-P
+q<-solve(M[2:33,2:33],-M[2:33,34])
+q<-append(append(0,q),1)
+vplus<-c()
+vmin<-c()
+for(i in 1:34){
+  if(q[i]<=0.5){vmin<-append(vmin,i)} else{vplus<-append(vplus,i)}
+}
+```
+
+```{r}
+library(qgraph)
+```
+```{r}
+qgraph(table,groups=list(data1,data2))
+qgraph(table, groups=list(vmin,vplus))
+```
+Now we define the functions J and Jplus
+```{r}
+J<-function(x,y){
+  if(x!=y){
+  pi[x]*(1-q[x])*P[x,y]*q[y]} else{0}
+}
+Jplus<-function(x,y){
+  max(J(x,y)-J(y,x),0)
+}
+```
+transitionflux
+```{r}
+T<-function(x){
+  if(x==1){sum<-0
+  for(i in 1:34){sum<-sum+Jplus(x,i)
+  return(sum)}} else{
+    sum<-0
+  for(i in 1:34){sum<-sum+Jplus(i,x)
+  return(sum)}
+  }
+}
+```
+The next two vectors are just the functions T and Jplus as a vector respectively matrix to be able to give weights in the directed graph
+```{r}
+vectT<-c()
+for(i in 1:34){vectT<-append(vectT,T(i))}
+matJ<-matrix(nrow=34,ncol=34)
+for(i in 1:34){for(j in 1:34){matJ[i,j]<-Jplus(i,j)}}
+```
+Remove the values in R which are zero but keep the arrows if there is no flow, else the graph gets disconnected:
+```{r}
+for(i in 1:34){for(j in i:34){
+  if(table[i,j]==1){
+    if(Jplus(i,j)>0){table[j,i]<-NA}
+    if(Jplus(j,i)>0){table[i,j]<-NA}
+  }
+}}
+```
+plot the graph
+```{r}
+qgraph(table+matJ, groups=list(vmin,vplus),vsize=4*(vectT+1),esize=10)
+```
+

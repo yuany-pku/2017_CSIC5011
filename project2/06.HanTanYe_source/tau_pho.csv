@@ -1,0 +1,6 @@
+,ranking1,ranking2,Kendall's tau,Spearman's pho
+0,research ranking,pagerank,-0.526674516617,-0.70869186811
+1,research ranking,HITS hub,-0.148664960485,-0.210122438933
+2,research ranking,HITS authority,-0.0490587388336,-0.0647447565464
+3,weightmat_hub,adjmat_hub,0.573943661972,0.748557363599
+4,weightmat_authority,adjmat_authority,-0.0391949372458,-0.0479861025817

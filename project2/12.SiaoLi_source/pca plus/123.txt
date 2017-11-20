@@ -1,0 +1,14 @@
+Mean squared error: 7.31
+Variance score: 0.21
+
+Mean squared error: 5.42
+Variance score: 0.13
+
+Mean squared error: 5.04
+Variance score: 0.10
+
+Mean squared error: 1.79
+Variance score: 0.03
+
+Mean squared error: 8.16
+Variance score: 0.20

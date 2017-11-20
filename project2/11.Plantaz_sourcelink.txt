@@ -1,0 +1,4 @@
+# Project 2: Transition Paths of Karate Club Network
+# Xavier Pierre Francois PLANTAZ
+
+Code is available on github at <a href="https://github.com/xpfio/CSIC5011"><span class="s3">https://github.com/xpfio/CSIC5011</span></a>
