@@ -1,0 +1,6 @@
+# Final Project: Art Forgery Detection: Spotting the Real Raphael’s Sketches
+# Hanlin GU, Yifei HUANG, and Justin (Jiaze) Sun
+
+For the source code, because there is a 'model' file that is a bit big (around 40MB), I can only share it via google drive. Here is the link:
+
+https://drive.google.com/file/d/1Td2UBZOFZdsxPC_jzfn_22yNudvvWbH_/view?usp=sharing

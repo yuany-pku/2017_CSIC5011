@@ -1,0 +1,6 @@
+# Final Project
+# Kirill KONOVALOV
+
+Python source codes at: 
+
+https://github.com/AlasGarn/csis_final/blob/master/csic5011_final_project.ipynb

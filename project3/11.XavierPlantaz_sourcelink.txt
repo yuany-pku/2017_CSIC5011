@@ -1,0 +1,8 @@
+# Final Project: A VISUAL LANGUAGE FOR CRYPTOCURRENCY TECHNOLOGIES EXPLORATION
+# Xavier Pierre Francois PLANTAZ
+
+https://github.com/xpfio/awesome-blockchain-visualisation
+https://github.com/xpfio/blockchain_viz
+https://github.com/xpfio/blockchain_block_visualisation
+https://github.com/xpfio/bitcoin-clicker (demo https://xpfio.github.io/bitcoin-clicker/)
+https://github.com/xpfio/d3-force-visual (demo https://xpfio.github.io/d3-force-visual/)
