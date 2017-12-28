@@ -1,6 +1,8 @@
 # CSIC5011
 Topological and Geometric Data Reduction and Visualization Repo
 
+Xavier Pierre Francois PLANTAZ
+
 # Overview
 
 This repo contains the code source and the posters for Professor YAO course.
