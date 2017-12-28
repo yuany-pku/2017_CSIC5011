@@ -1,6 +1,8 @@
 # CSIC5011_finalproject
 
-A jupyter notebook guide for my final project.
+A jupyter notebook guide for my final project. 
+
+https://github.com/huhrichard/CSIC5011_finalproject
 
 Since the image files are too large, please download them from here:
 
