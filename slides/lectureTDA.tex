@@ -1,0 +1,2051 @@
+%!TEX encoding = UTF-8 Unicode
+%\documentclass[slidestop,compress,epsfig,color]{beamer}
+\documentclass[slidestop,epsfig,color]{beamer}
+\mode<presentation>{}
+\usetheme{Copenhagen}
+\usepackage{pstricks}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{beamerthemesplit}
+\useoutertheme[subsection=false]{smoothbars} 
+%\useoutertheme{sidebar} 
+%\useoutertheme{default}
+\useoutertheme{miniframes} %miniframes
+\useinnertheme{rectangles}
+\usepackage{CJKutf8}
+
+%\beamersetuncovermixins{\opaqueness<1>{25}}{\opaqueness<2->{15}}
+
+\providecommand{\C}{\mathbb{C}}
+\providecommand{\R}{\mathbb{R}}
+\providecommand{\X}{\mathcal{X}}
+\providecommand{\Y}{\mathcal{Y}}
+\providecommand{\Z}{\mathbb{Z}}
+\providecommand{\Q}{\mathbb{Q}}
+\providecommand{\E}{\mathbb{E}}
+\providecommand{\H}{\mathcal{H}}
+\providecommand{\D}{\mathcal{D}}
+\providecommand{\U}{\mathcal{U}}
+\providecommand{\De}{\Delta}
+\providecommand{\de}{\delta}
+\providecommand{\hg}{\hat{g}}
+
+\theoremstyle{example}
+\newtheorem{thm}{}
+%\newtheorem{fact}{}
+
+\providecommand{\subitem}{\\ \textcolor{yellow}{$\bullet\ $}}
+\DeclareMathOperator{\sign}{sign}
+%\DeclareMathOperator{\span}{span}
+\DeclareMathOperator{\supp}{supp}
+%\DeclareMathOperator{\ker}{ker}
+\DeclareMathOperator{\im}{im}
+\DeclareMathOperator{\proj}{proj}
+\DeclareMathOperator{\grad}{grad}
+\DeclareMathOperator{\curl}{curl}
+\DeclareMathOperator{\dive}{div}
+\DeclareMathOperator{\ASL}{\mathfrak{sl}}
+
+
+
+\title[HKUST, Fall 2017]{An Introduction to Topological Data Analysis}
+\author{Yuan Yao}
+\institute{Department of Mathematics \\ HKUST}
+\date{November, 2017}
+\addtobeamertemplate{title page}{}{}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\section[Outline]{}
+\frame{\tableofcontents}
+
+\section[Why]{Why Topological Methods?}
+
+\subsection{Methods for Visualizing a Data Geometry}
+\frame{
+\frametitle{Methods for Summarizing or Visualizing a Geometry}
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.4\textwidth]{figures/geom_project.pdf}  \\
+\caption[ ]{Linear projection (PCA, MDS, variable selection, etc)}
+\end{figure}
+}
+
+\frame{
+\frametitle{Methods for Summarizing or Visualizing a Geometry}
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.6\textwidth]{figures/geom_nldr.png}  \\
+\caption[ ]{Nonlinear Dimensionality Reduction (ISOMAP, LLE etc.)}
+\end{figure}
+}
+
+\frame{
+ \frametitle{Geometric Data Reduction}
+ \begin{itemize}
+ \item General method of \textcolor{red}{manifold learning} takes the following \textcolor{red}{Spectral Kernal Embedding} approach
+ \subitem construct a \textcolor{blue}{neighborhood graph} of data, $G$
+ \subitem construct a \textcolor{blue}{positive semi-definite kernel} on graphs, $K$
+ \subitem find global embedding coordinates of data by \textcolor{blue}{eigen-decomposition} of $K=YY^T$
+ \item Sometimes `distance metric' is just a similarity measure (nonmetric MDS, ordinal embedding)
+ \item Sometimes coordinates are not a good way to organize/visualize the data (e.g. $d>3$) 
+ \item Sometimes all that is required is a \textcolor{red}{qualitative} view
+ \end{itemize}
+}
+
+
+\subsection{Why Topology?}
+
+\frame{
+\frametitle{Topology}
+\begin{itemize}
+\item \small Origins of Topology in Math
+\subitem Leonhard Euler 1736, Seven Bridges of Königsberg
+\subitem Johann Benedict Listing 1847, Vorstudien zur Topologie
+\subitem J.B. Listing (orbituary) Nature 27:316-317, 1883.
+“qualitative geometry from the ordinary geometry in which quantitative relations chiefly are treated.” 
+\end{itemize}
+%\begin{itemize}
+%\item We would like to say that all points within \textcolor{red}{tolerance} are the same
+%\item Moreover, all non-zero distances beyond \textcolor{red}{tolerance} are the same, i.e. invariant under distortion
+%\end{itemize}
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.8\textwidth]{figures/seven_bridges.png} 
+\end{figure}
+}
+
+\frame{
+  \frametitle{RNA hairpin folding pathways}
+\begin{figure}[!h] 
+\begin{center}
+\begin{tabular}{c}
+\centerline{\includegraphics[width=0.55\textwidth]{figures/mapper_RFCE10_8l.pdf}} 
+\end{tabular}
+\caption{Jointly with Xuhui Huang, Jian Sun, Greg Bowman, Gunnar Carlsson, Leo Guibas, and Vijay Pande, \emph{JACS'08}, \emph{JCP'09}}
+\end{center}
+\end{figure}
+}
+
+\frame{
+  \frametitle{Progression of Breast Cancer with gene expression profiles}
+\begin{figure}[!h] 
+\begin{center}
+\begin{tabular}{c}
+\centerline{\includegraphics[width=0.8\textwidth]{figures/breastcancer.pdf}} 
+\end{tabular}
+\caption{Monica Nicolau, A. Levine, and Gunnar Carlsson, \emph{PNAS'10}}
+\end{center}
+\end{figure}
+}
+
+\frame{
+	\frametitle{Key elements}
+	\begin{itemize}
+	\item Coordinate free representation
+	\item Invariance under deformations
+	\item Compressed qualitative representation
+	\end{itemize}
+	}
+	
+\frame{
+\frametitle{Topology}
+\begin{itemize}
+\item To see points in neighborhood the \emph{same} requires distortion of distances, i.e. stretching and shrinking
+\item We do not permit \emph{tearing}, i.e. distorting distances in a discontinuous way
+\end{itemize}
+}
+
+
+\frame{
+\frametitle{Continous Topology}
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/knots.png}
+\caption{Homeomorphic} 
+\end{figure}
+}
+
+\frame{
+\frametitle{Continuous Topology}
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/sphere.png}
+\caption{Homeomorphic} 
+\end{figure}
+}
+
+\frame{
+	\frametitle{Discrete case?}
+\centering{\emph{How does topology make sense, in \textcolor{red}{discrete} and \textcolor{red}{noisy} setting?}}
+}
+
+%\subsection{Methods for Imposing or Visualizing a Data Geometry}
+
+%\frame{
+%\frametitle{Methods for Imposing a Geometry}
+%\begin{figure}[!h]
+%\centering
+%\includegraphics[width=0.7\textwidth]{figures/geom_metric.pdf}  \\
+%\caption[ ]{Define a metric}
+%\end{figure}
+%}
+
+%\frame{
+%\frametitle{Methods for Imposing a Geometry}
+%\begin{figure}[!h]
+%\centering
+%\includegraphics[width=0.6\textwidth]{figures/geom_network.pdf}  \\
+%\caption[ ]{Define a graph or network structure}
+%\end{figure}
+%}
+%
+%
+%\frame{
+%\frametitle{Methods for Imposing a Geometry}
+%\begin{figure}[!h]
+%\centering
+%\includegraphics[width=0.6\textwidth]{figures/geom_cluster.pdf}  \\
+%\caption[ ]{Clustering the data}
+%\end{figure}
+%}
+%
+%
+%\frame{
+%\frametitle{Methods for Summarizing or Visualizing a Geometry}
+%\begin{figure}[!h]
+%\centering
+%\includegraphics[width=0.3\textwidth]{figures/geom_tree.png}  \\
+%\caption[ ]{Project to a Tree (Evolution and Phylogenetics)}
+%\end{figure}
+%}
+
+%\subsection{Properties of Data Geometry}
+
+\frame{
+\frametitle{Properties of Data Geometry}
+\begin{fact}
+We Don't Trust Large Distances!
+\end{fact}
+ \begin{itemize}
+ \item In life or social sciences, \textcolor{red}{distance (metric)} are constructed using a notion of \textcolor{red}{similarity (proximity)}, but have no theoretical backing (e.g. distance between faces, gene expression profiles, Jukes-Cantor distance between sequences)
+ \item Small distances still represent similarity (proximity), but long distance comparisons hardly make sense
+ \end{itemize} 
+}
+
+\frame{
+\frametitle{Properties of Data Geometry}
+\begin{fact}
+We Only Trust Small Distances a Bit!
+\end{fact}
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.4\textwidth]{figures/small_distance.png} 
+\end{figure}
+ \begin{itemize}
+ \item Both pairs are regarded as similar, but the strength of the similarity as encoded by the distance may not be so significant
+ \item Similar objects lie in neighborhood of each other, which suffices to define \textcolor{red}{topology}
+ \end{itemize} 
+}
+
+\frame{
+\frametitle{Properties of Data Geometry}
+\begin{fact}
+Even Local Connections are Noisy, depending on observer's scale!
+\end{fact}
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.4\textwidth]{figures/circle_dots.jpg} 
+\end{figure}
+ \begin{itemize}
+ \item Is it a circle, dots, or circle of circles?
+ \item To see the circle, we ignore variations in small distance (tolerance for proximity)
+ \end{itemize} 
+}
+
+\frame{
+\frametitle{So we need topology for robustness against metric distortions}
+\begin{itemize}
+\item Distance measurements are noisy
+\item Physical device like human eyes may ignore differences in proximity (or as an average effect)
+ \item \textcolor{red}{Topology} is the crudest way to capture invariants under distortions of distances
+ \item At the presence of \textcolor{red}{noise}, one need \textcolor{red}{topology varied with scales}
+\end{itemize}
+} 
+
+\frame{
+\frametitle{What kind of topology?}
+\begin{itemize}
+\item Topology studies (global) mappings between spaces 
+\item \textcolor{blue}{Point-set} topology: continuous mappings on open sets
+\item \textcolor{blue}{Differential} topology: differentiable mappings on smooth manifolds
+\subitem Morse theory tells us topology of continuous space can be learned by discrete information on critical points
+\item \textcolor{blue}{Algebraic} topology: homomorphisms on algebraic structures, the most concise encoder for topology
+\item \textcolor{blue}{Combinatorial} topology: mappings on \textcolor{red}{simplicial (cell) complexes}
+\subitem simplicial complex may be constructed from data
+\subitem Algebraic, differential structures can be defined here
+\end{itemize}
+}
+
+\frame{
+\frametitle{Topological Data Analysis}
+\begin{itemize}
+\item What kind of topological information often useful
+\subitem 0-homology: clustering or connected components
+\subitem 1-homology: coverage of sensor networks; paths in robotic planning
+\subitem 1-homology as obstructions: inconsistency in statistical ranking; harmonic flow games
+\subitem high-order homology: high-order connectivity?
+\item How to compute homology in a stable way?
+\subitem \emph{simplicial complexes} for data representation
+\subitem \emph{filtration} on simplicial complexes
+\subitem \emph{persistent homology}
+\end{itemize}
+}
+
+\frame{
+\frametitle{Betti Numbers: the number of $i$-dim holes}
+\begin{figure}[!h]
+\includegraphics[width=0.8\textwidth]{figures/betti_circle.png}  
+%\caption{The birth and death of connected components.}
+\end{figure}
+}
+
+\frame{
+\frametitle{Betti Numbers: the number of $i$-dim holes}
+\begin{figure}[!h]
+%\centering
+\includegraphics[width=0.4\textwidth]{./figures/betti_sphere0.png}  
+\caption{Sphere: $\beta_0=1$, $\beta_1=0$, $\beta_2=1$, and $\beta_k=0$ for $k\geq 3$}
+\end{figure}
+}
+
+\frame{
+\frametitle{Betti Numbers: the number of $i$-dim holes}
+\begin{figure}[!h]
+%\centering
+\includegraphics[width=0.8\textwidth]{./figures/betti_torus.png}  
+%\caption{The birth and death of connected components.}
+\end{figure}
+}
+
+\frame{
+	\frametitle{Betti Numbers and Homology Groups}
+	\begin{itemize}
+	\item Betti numbers are computed as dimensions of Boolean vector spaces (E. Noether, $\Z_2$-homology group) \pause
+	\item $\beta_i(X)=dim H_i(X, \Z_2)$, $\Z_2$-homology or more general Homology group associated with any fields or integral domain (e.g. $\Z$, $\Q$, and $\R$) \pause
+	\item $H_i(X)$ is \emph{functorial}, i.e. continuous mapping $f: X\to Y$ induces linear transformation $H_i(f): H_i(X) \to H_i(Y)$, structure preserving \pause
+	\item computation is simple linear algebra over fields or integers \pause
+	\item data representation by \emph{simplicial complexes}  
+	\end{itemize}
+	}
+	
+\section[Simplicial Complex]{Simplicial Complex for Data Representation}
+
+\subsection{Simplicial Complex}
+\frame{
+\frametitle{Simplicial Complexes for Data Representation}
+\begin{definition}[Simplicial Complex]
+An abstract simplicial complex is a collection $\Sigma$ of subsets of $V$ which is closed under inclusion (or deletion), i.e. $\tau\in\Sigma$ and $\sigma\subseteq \tau$, then $\sigma\in \Sigma$. 
+\end{definition}
+\begin{itemize}
+\item Chess-board Complex
+\item Term-document cooccurance complex
+\item Nerve complex
+\item Point cloud data in metric spaces:
+\subitem \v{C}ech, Rips, Witness complex
+\subitem Mayer-Vietoris Blowup
+\item Clique complex in pairwise comparison graphs
+\item Strategic complex in game theory
+\end{itemize}
+}
+
+\frame{
+\frametitle{Chess-board Complex}
+\begin{definition}[Chess-board Complex]
+Let $V$ be the positions on a Chess board. $\Sigma$ collects position subsets of $V$ where one can place queens (rooks) without capturing each other. 
+\end{definition}
+\begin{itemize}
+\item Closedness under deletion: if $\sigma\in \Sigma$ is a set of ``safe'' positions, then any subset $\tau\subseteq\sigma$ is also a set of ``safe'' positions  
+\end{itemize}
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.2\textwidth]{figures/chessboard-queen-moves.png} \ \ \
+\includegraphics[width=0.2\textwidth]{figures/queen8.jpg} 
+\end{figure}
+}
+
+\frame{
+\frametitle{Term-Document Co-occurrence Complex}
+\begin{figure}[!h]
+%\centering
+\includegraphics[width=0.3\textwidth]{./figures/cooccurrence_mat.pdf}  
+\includegraphics[width=0.4\textwidth]{./figures/cooccurrence.pdf} 
+\end{figure}
+\begin{itemize}
+\item Left is a term-document co-occurrence matrix
+\item Right is a simplicial complex representation of terms
+\item Connectivity analysis captures more information than Latent Semantic Index (Li \& Kwong 2009)
+\end{itemize}
+}
+
+\subsection{Nerve, Reeb Graph, and Mapper}
+\frame{
+\frametitle{Nerve complex}
+\begin{definition}[Nerve Complex]
+Define a cover of $X$, $X=\cup_\alpha U_\alpha$. $V=\{U_\alpha\}$ and define $\Sigma=\{U_I: \cap_{\alpha\in I} U_I \neq \emptyset \}$. 
+\end{definition}
+\begin{itemize}
+\item Closedness under deletion
+\item Can be applied to any topological space $X$
+%\item In a metric space $(X,d)$, if $U_\alpha = B_\epsilon(t_\alpha):=\{x\in X: d(x-t_\alpha)\leq \epsilon\}$, we have \textcolor{red}{\v{C}ech complex} $C_\epsilon$. 
+\item \textcolor{red}{Nerve Theorem}: if every $U_I$ is contractible, then $X$ has the same homotopy type as $\Sigma$.  
+\end{itemize}
+}
+
+\frame{
+	\frametitle{Nerve complex example}
+\begin{figure}[!h]
+%\centering
+\includegraphics[width=0.4\textwidth]{./figures/circle_cover.pdf}  
+\caption{Covering of circle}
+\end{figure}
+}
+
+\frame{
+	\frametitle{Nerve complex example}
+\begin{figure}[!h]
+%\centering
+\includegraphics[width=0.4\textwidth]{./figures/circle_cover.pdf}  
+\includegraphics[width=0.4\textwidth]{./figures/circle_nodes.pdf}  
+\caption{Create nodes}
+\end{figure}
+}
+
+\frame{
+	\frametitle{Nerve complex example}
+\begin{figure}[!h]
+%\centering
+\includegraphics[width=0.4\textwidth]{./figures/circle_cover.pdf}  
+\includegraphics[width=0.4\textwidth]{./figures/circle_nerve.pdf}  
+\caption{Create edges, that gives a Nerve complex (graph)}
+\end{figure}
+}
+
+\frame{
+	\frametitle{Nerve of Seven Bridges of Königsberg}
+%\begin{itemize}
+%\item We would like to say that all points within \textcolor{red}{tolerance} are the same
+%\item Moreover, all non-zero distances beyond \textcolor{red}{tolerance} are the same, i.e. invariant under distortion
+%\end{itemize}
+\begin{figure}[!h]
+\centering
+\includegraphics[width=\textwidth]{figures/seven_bridges_nerve.pdf} 
+\caption{Nerve graph of Seven Bridges of Könisberg}
+\end{figure}
+}
+
+
+\frame{
+	\frametitle{Point cloud data}
+\begin{itemize}
+\item Now given point cloud data $\X=\{x_1,\ldots, x_n\}$, and a covering $V=\{U_\alpha\}$, where each $U_\alpha$ is a cluster of data
+\item Build a simplicial complex (Nerve) in the same way, but components replaced by clusters  
+\end{itemize}
+}
+
+\frame{
+	\frametitle{Mapping}
+\begin{itemize}
+\item How to choose coverings?
+\item Create a reference map (or filter) $h: \X\to \mathcal{Z}$, where $\mathcal{Z}$ is a topological space often with interesting metrics (e.g. $\R$, $\R^2$, $S^1$ etc.), and a covering $\mathcal{U}$ of $\mathcal{Z}$, then construct the covering of $\X$ using inverse map $\{h^{-1} U_\alpha\}$. 
+\end{itemize}
+}
+
+\frame{
+  \frametitle{Example: Morse Theory and Reeb graph}
+ \begin{itemize}
+ \item a nice (Morse) function: $h: \X \to \R$, on a smooth manifold $\X$
+ \item topology of $\X$ reconstructed from level sets $h^{-1}(t)$ 
+ \item topological of $h^{-1}(t)$ only changes at `\textcolor{red}{critical values}' 
+ \item \textcolor{red}{Reeb graph}: a simplified version, contracting into points the connected components in $h^{-1}(t)$
+ \end{itemize}
+\begin{figure}[t]
+\centering
+\begin{tabular}{c}
+	\includegraphics[width=0.4\textwidth]{figures/Reeb_graph.pdf}  
+\end{tabular}
+	\caption{Construction of Reeb graph; $h$ maps each point on torus to its height.
+	\label{torus}} 
+\end{figure}
+}
+
+\frame{
+  \frametitle{Mapper: from Continuous to Discrete...}
+\begin{figure}[t]
+\centering
+\begin{tabular}{c}
+	\includegraphics[width=0.4\textwidth]{figures/Mapper_graph.pdf}  
+\end{tabular}
+	\caption{An illustration of Mapper.} 
+\end{figure}
+Note: 
+\begin{itemize}
+\item degree-one nodes contain local minima/maxima;
+\item degree-three nodes contain saddle points (critical points);
+\item degree-two nodes consist of regular points 
+\end{itemize}
+}
+
+\frame{
+  \frametitle{Mapper algorithm}
+[{\it\tiny Singh-Memoli-Carlsson. Eurograph-PBG, 2007}] Given a data set $\X$,
+  
+  \begin{itemize}
+  \item choose a \textcolor{red}{filter} map $h:\X\to \mathcal{Z}$, where $\mathcal{Z}$ is a topological space such as $\R$, $S^1$, $\R^d$, etc.
+  \item choose a cover $\mathcal{Z} \subseteq \cup_\alpha U_\alpha$ 
+  \item \textcolor{red}{cluster/partite} level sets $h^{-1}(U_\alpha)$ into $V_{\alpha, \beta}$ 
+  \item \textcolor{red}{graph} representation: a node for each $V_{\alpha,\beta}$, an edge between $(V_{\alpha_1,\beta_1},V_{\alpha_2,\beta_2})$ iff $U_{\alpha_1} \cap U_{\alpha_2} \neq \emptyset$ and $V_{\alpha_1,\beta_1}\cap V_{\alpha_2,\beta_2}\neq \emptyset$.
+  \item extendable to \textcolor{red}{simplicial complex representation}.  
+  \end{itemize}
+ 
+ \medskip
+ 
+ Note: it extends \textcolor{blue}{Reeb Graph} from $\R$ to general topological space $\mathcal{Z}$; may lead to a particular implementation of \textcolor{blue}{Nerve theorem} through filter map $h$. 
+}
+
+\frame{
+  \frametitle{In applications.}
+  Reeb graph has found various applications in computational geometry, statistics under different names.
+  \begin{itemize}
+  \item computer science: contour trees, Reeb graphs
+  \item statistics: density cluster trees (Hartigan)
+  \end{itemize}
+  \begin{figure}
+	\centering
+	\includegraphics[width=0.6\textwidth]{figures/density-tree.pdf}
+%	\caption{Non-Gaussian Clusters}
+\end{figure}
+} 
+
+\frame{
+  \frametitle{Reference Mapping}
+  Typical one dimensional filters/mappings:
+  \begin{itemize}
+  \item Density estimators
+  \item Measures of data (ec-)centrality: e.g. $\sum_{x^\prime \in \X} d(x,x^\prime)^p$
+  \item Geometric embeddings: PCA/MDS, Manifold learning, Diffusion Maps etc.
+  \item Response variable in statistics: progression stage of disease etc.
+  \end{itemize}
+} 
+
+\frame{
+  \frametitle{Example: RNA Tetraloop}
+
+\begin{columns} 
+\begin{column}{0.3\textwidth} 
+\begin{figure}[h]
+\centering
+	\includegraphics[width=0.9\textwidth]{figures/gcaa.pdf} \\
+	\includegraphics[width=0.4\columnwidth]{figures/native_contactmap_sm.png}
+	\caption{RNA GCAA-Tetraloop} 
+\end{figure}
+\end{column} 
+\begin{column}{0.7\textwidth} 
+Biological relevance: 
+
+\begin{itemize}
+\item serve as nucleation site for RNA folding
+\item form sequence specific tertiary interactions
+\item protein recognition sites
+\item certain Tetraloops can pause RNA transcription
+\end{itemize}
+Note: simple, but, \textcolor{red}{biological debates over intermediate states} on folding pathways 
+\end{column} 
+\end{columns} 
+}
+
+\frame{
+  \frametitle{Debates: Two-state vs. Multi-state Models}
+
+\begin{columns}
+\begin{column}{0.3\textwidth}
+\begin{figure}[!h]
+%\centering
+\begin{tabular}{c}
+	\includegraphics[width=0.7\textwidth]{figures/state2.pdf}  \\
+	(a) 2-state model \\
+	\includegraphics[width=0.7\textwidth]{figures/state3.pdf} \\
+	(b) multi-state model
+\end{tabular}
+%	\caption{(a) 2-state model; (b) multi-state model} 
+\end{figure}
+\end{column}
+\begin{column}{0.7\textwidth}
+\begin{itemize}
+\item 2-state: transition state with any one stem base pair, from \textcolor{red}{thermodynamic} experiments  [{\tiny \it Ansari A, et al. PNAS, 2001, 98: 7771-7776}]
+\item multi-state: there is a stable intermediate state,
+which contains collapsed structures, from \textcolor{red}{kinetic} measurements [{\tiny \it Ma H, et al. PNAS, 2007, 104:712-6}]
+\item experiments: \textcolor{red}{no} structural information
+\item computer simulations at full-atom resolution:
+\subitem \textcolor{red}{exisitence} of intermediate states
+\subitem if yes, what's the \textcolor{red}{structure}?
+\end{itemize}
+\end{column}
+\end{columns}
+}
+
+\frame{
+  \frametitle{Mapper with density filters in biomolecular folding}
+Reference: \textcolor{blue}{Bowman-Huang-Yao et al. J. Am. Chem. Soc. 2008; Yao, Sun, Huang, et al. J. Chem. Phys. 2009.}
+\begin{itemize}
+\item \textcolor{red}{densest} regions (energy basins) may correspond to \textcolor{red}{metastates} (e.g. folded, extended) 
+\item \textcolor{red}{intermediate/transition states} on pathways connecting them are \textcolor{red}{relatively sparse} 
+\end{itemize}
+
+Therefore with Mapper 
+\begin{itemize}
+\item \textcolor{red}{clustering on density level sets} helps separate and identify metastates and intermediate/transition states
+\item \textcolor{red}{graph} representation reflects kinetic connectivity between states 
+\end{itemize} 
+}
+
+\frame{
+  \frametitle{A vanilla version}
+  \begin{figure}
+	\centering
+	\includegraphics[width=0.9\textwidth]{figures/mapper.pdf}
+	\caption{Mapper Flow Chart}
+  \end{figure}
+ \begin{enumerate}
+ \item Kernel density estimation $h(x)= \sum_i K(x,x_i)$ with Hamming distance for contact maps
+ \item Rank the data by $h$ and divide the data into $n$ overlapped sets 
+ \item Single-linkage clustering on each level sets
+ \item Graphical representation
+ \end{enumerate}
+}
+
+\frame{
+  \frametitle{Mapper output for Unfolding Pathways}
+  \begin{figure}[!h] 
+\begin{center}
+\begin{tabular}{c}
+\centerline{\includegraphics[width=0.7\textwidth]{figures/mapper_UFCE10_8l.pdf}} 
+\end{tabular}
+\caption{Unfolding pathway}
+\end{center}
+\end{figure}
+}
+
+
+\frame{
+  \frametitle{Mapper output for Refolding Pathways}
+\begin{figure}[!h] 
+\begin{center}
+\begin{tabular}{c}
+\centerline{\includegraphics[width=0.6\textwidth]{figures/mapper_RFCE10_8l.pdf}} 
+\end{tabular}
+\caption{Refolding pathway }
+\end{center}
+\end{figure}
+}
+
+\frame{
+  \frametitle{Progression of Breast Cancer: $l_2$-eccentrality}
+\begin{figure}[!h] 
+\begin{center}
+\begin{tabular}{c}
+\centerline{\includegraphics[width=0.8\textwidth]{figures/breastcancer.pdf}} 
+\end{tabular}
+\caption{Monica Nicolau, A. Levine, and Gunnar Carlsson, \emph{PNAS'10}}
+\end{center}
+\end{figure}
+}
+
+\frame{
+  \frametitle{Cell Cycles}
+\begin{figure}[!h] 
+\begin{center}
+\begin{tabular}{c}
+\centerline{\includegraphics[width=0.4\textwidth]{figures/cellcycle.pdf}} 
+\end{tabular}
+\caption{Cell Cycle Microarray Data, courtesy of M. Nicolau, Nagarajan, G. Singh, Carlsson}
+\end{center}
+\end{figure}
+}
+
+\frame{
+  \frametitle{Relationships between diabetic, pre-diabetic, and healthy populations}
+\begin{figure}[!h] 
+\begin{center}
+\begin{tabular}{c}
+\centerline{\includegraphics[width=0.5\textwidth]{figures/diabetes.pdf}} 
+\end{tabular}
+\caption{Miller-Reaven Diabetes Dataset, courtesy of Gunnar Carlsson}
+\end{center}
+\end{figure}
+}
+
+\frame{
+  \frametitle{Leukemia with gene expression profiles}
+\begin{figure}[!h] 
+\begin{center}
+\begin{tabular}{c}
+\centerline{\includegraphics[width=0.5\textwidth]{figures/leukemia.pdf}} 
+\end{tabular}
+\caption{Topological structure of Leukemia: courtesy of Gunnar Carlsson}
+\end{center}
+\end{figure}
+}
+
+\subsection{\v{C}ech, Vietoris-Rips, and Witness Complexes}
+\frame{
+\frametitle{\v{C}ech complex}
+\begin{definition}[\v{C}ech Complex $C_\epsilon$]
+In a metric space $(X,d)$, define a cover of $X$, $X=\cup_\alpha U_\alpha$ where $U_\alpha = B_\epsilon(t_\alpha):=\{x\in X: d(x-t_\alpha)\leq \epsilon\}$. $V=\{U_\alpha\}$ and define $\Sigma=\{U_I: \cap_{\alpha\in I} U_I \neq \emptyset \}$. 
+\end{definition}
+\begin{itemize}
+\item Closedness under deletion
+\item Can be applied to any metric space $X$
+\item \textcolor{red}{Nerve Theorem}: if every $U_I$ is contractible, then $X$ has the same homotopy type as $\Sigma$.  
+\end{itemize}
+}
+
+\frame{
+\frametitle{Example: \v{C}ech Complex}
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/nerve.png} 
+\caption{\v{C}ech complex of a circle, $C_\epsilon$, covered by a set of balls.}
+\end{figure}
+}
+
+\frame{
+\frametitle{Vietoris-Rips complex}
+\begin{itemize}
+\item \v{C}ech complex is hard to compute, even in Euclidean space
+\item One can easily compute an upper bound for \v{C}ech complex
+\subitem Construct a \v{C}ech subcomplex of 1-dimension, i.e. a graph with edges connecting point pairs whose distance is no more than $\epsilon$. 
+\subitem Find the clique complex, i.e. maximal complex whose 1-skeleton is the graph above, where every $k$-clique is regarded as a $k-1$ simplex 
+\end{itemize}
+\begin{definition}[Vietoris-Rips Complex]
+Let $V=\{x_\alpha\in X\}$. Define $VR_\epsilon = \{U_I \subseteq V: d(x_\alpha,x_\beta)\leq \epsilon, \alpha,\beta\in I\}$.  
+\end{definition}
+}
+
+\frame{
+\frametitle{Example: Rips Complex}
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/rips_cech.png} 
+\caption{Left: \v{C}ech complex gives a circle; Right: Rips complex gives a sphere $S^2$.}
+\end{figure}
+}
+
+\frame{
+\frametitle{Generalized Vietoris-Rips for Symmetric Relations}
+\begin{definition}[Symmetric Relation Complex]
+Let $V$ be a set and a symmetric relation $R=\{(u,v)\} \subseteq V^2$ such that $(u,v)\in R\Rightarrow (v,u)\in R$. $\Sigma$ collects subsets of $V$ which are in pairwise relations. 
+\end{definition}
+
+\begin{itemize}
+\item Closedness under deletion: if $\sigma\in \Sigma$ is a set of related items, then any subset $\tau\subseteq\sigma$ is a set of related items
+\item Generalized Vietoris-Rips complex beyond metric spaces
+\item E.g. Zeeman's tolerance space  
+\item C.H. Dowker defines simplicial complex for unsymmetric relations
+\end{itemize}
+}
+
+\frame{
+\frametitle{Sandwich Theorems}
+\begin{itemize}
+\item Rips is easier to compute than Cech
+\subitem even so, Rips is exponential to dimension generally
+\item However Vietoris-Rips CAN NOT preserve the homotopy type as Cech
+\item But there is still a hope to find a \textcolor{red}{lower bound} on homology --
+\end{itemize}
+\begin{theorem}[``Sandwich'']
+$$  VR_{\epsilon} \subseteq {C}_{\epsilon} \subseteq VR_{2\epsilon} $$ 
+\end{theorem}
+\begin{itemize}
+\item If a homology group ``persists'' through $R_{\epsilon} \to R_{2\epsilon}$, then it must exists in $C_{\epsilon}$; but not the vice versa. 
+\end{itemize}
+}
+
+
+
+\frame{
+\frametitle{A further simplification: Witness complex}
+\begin{definition}[Strong Witness Complex]
+Let $V=\{t_\alpha\in X\}$. Define $W^{s}_\epsilon = \{U_I \subseteq V: \exists x\in X, \forall \alpha\in I, d(x,t_\alpha)\leq \textcolor{red}{d(x,V)} + \epsilon\}$.  
+\end{definition}
+\begin{definition}[Week Witness Complex]
+Let $V=\{t_\alpha\in X\}$. Define $W^{w}_\epsilon = \{U_I \subseteq V: \exists x\in X, \forall \alpha\in I, d(x,t_\alpha)\leq \textcolor{red}{d(x,V_{-I} )} + \epsilon\}$.  
+\end{definition}
+\begin{itemize}
+\item $V$ can be a set of landmarks, much smaller than $X$
+\item Monotonicity: $W^*_\epsilon \subseteq W^*_{\epsilon'}$ if $\epsilon\leq \epsilon'$
+\item But not easy to control homotopy types between $W^*$ and $X$
+\end{itemize}
+}
+
+\frame{
+\frametitle{Strategic Simplicial Complex for Flow Games}
+\begin{figure}[!h]
+%\centering
+\includegraphics[width=0.3\textwidth]{./figures/battleSex_mat.pdf}  
+\includegraphics[width=0.3\textwidth]{./figures/battleSex.pdf} 
+\end{figure}
+\begin{itemize}
+\item Strategic simplicial complex is the clique complex of pairwise comparison graph above, inspired by ranking
+\item Every game can be decomposed as the direct sum of potential games and zero-sum games (harmonic games) (Candogan, Menache, Ozdaglar and Parrilo 2010)
+\end{itemize}
+}
+
+\section{Persistent Homology}
+
+\subsection{Betti Number at Different Scales}
+\frame{
+\frametitle{Example I: Persistent Homology of \v{C}ech Complexes}
+\begin{figure}[!h]
+%\centering
+\includegraphics[width=0.4\textwidth]{./figures/persistent1.png} 
+\includegraphics[width=0.4\textwidth]{./figures/persistent3.png}   
+\caption{Scale $\epsilon_1$: $\beta_0=1$, $\beta_1=3$}
+\end{figure}
+}
+
+\frame{
+\frametitle{Example I: Persistent Homology of \v{C}ech Complexes}
+\begin{figure}[!h]
+%\centering
+\includegraphics[width=0.4\textwidth]{./figures/persistent2.png}  
+\includegraphics[width=0.4\textwidth]{./figures/persistent4.png}  
+\caption{Scale $\epsilon_1$: $\beta_0=1$, $\beta_1=2$ }
+\end{figure}
+}
+
+\frame{
+\frametitle{Example II: Persistence 0-Homology induced by Height Function}
+\begin{figure}[!h]
+%\centering
+\includegraphics[width=0.9\textwidth]{./figures/persistence_diagram.jpg}  
+\caption{The birth and death of connected components.}
+\end{figure}
+}
+
+\frame{
+\frametitle{Example III: Persistent Homology as Online Algorithm to Track Topology Changements}
+\begin{figure}[!h]
+%\centering
+\includegraphics[width=0.9\textwidth]{./figures/persistence.jpg}  
+\caption{The birth and death of simplices.}
+\end{figure}
+}
+
+\frame{
+\frametitle{Persistent Betti Numbers: Barcodes}
+\begin{figure}[!h]
+%\centering
+\includegraphics[width=1\textwidth]{./figures/Barcode_dim0.png}  
+\end{figure}
+\begin{figure}[!h]
+%\centering
+\includegraphics[width=1\textwidth]{./figures/Barcode_dim1.png}  
+\end{figure}
+\begin{itemize}
+\item Toolbox: JavaPlex (\url{https://github.com/appliedtopology/javaplex/wiki/Tutorial})
+\subitem Java version of Plex, work with matlab
+\subitem Rips, Witness complex, Persistence Homology
+\item Other Choices: Plex 2.5 for Matlab (not maintained any more), Dionysus (Dimitry Morozov)
+\end{itemize}
+}
+
+
+\subsection{Algebraic Theory}
+\frame{
+\frametitle{Persistent Homology: Algebraic Theory [Zormorodian-Carlsson]}
+\begin{itemize}
+\item All above gives rise to a filtration of simplicial complex
+$$ \emptyset = \Sigma_0 \subseteq \Sigma_1 \subseteq \Sigma_2 \subseteq \ldots $$
+\item Functoriality of inclusion: there are homomorphisms between homology groups 
+$$ 0 \rightarrow H_1 \rightarrow H_2 \rightarrow \dots $$
+\item A persistent homology is the image of $H_i$ in $H_j$ with $j>i$. 
+\end{itemize}
+}
+
+
+\frame{
+\frametitle{Persistent 0-Homology of Rips Complex}
+\begin{itemize}
+\item Equivalent to \textcolor{red}{single-linkage} clustering
+\item Barcode is the single linkage dendrogram (tree) without labels 
+\item Kleinberg's Impossibility Theorem for clustering: no clustering algorithm satisfies scale invariance, richness, and consistency
+\item Memoli \& Carlsson 2009: single-linkage is the unique \textcolor{red}{persistent clustering} with scale invariance
+\item \textcolor{blue}{Open:} but, is persistence the necessity for clustering? 
+\item Notes: try matlab command \textcolor{blue}{\texttt{linkage}} for single-linkage clustering.
+\end{itemize}
+}
+
+%\subsection{Some Applications}
+
+\subsection{Application: Sensor Network Coverage}
+\frame{
+\frametitle{Application I: Sensor Network Coverage by Persistent Homology}
+\begin{itemize}
+\item \textcolor{blue}{V. de Silva and R. Ghrist  (2005)} Coverage in sensor networks via persistent homology. 
+\item Ideally sensor communication can be modeled by Rips complex
+\subitem two sensors has distance within a short range, then two sensors receive strong signals;
+\subitem two sensors has distance within a middle range, then two sensors receive weak signals;
+\subitem otherwise no signals 
+\end{itemize}
+}
+
+\frame{
+\frametitle{Sandwich Theorem}
+\begin{theorem}[de Silva-Ghrist 2005] Let $X$ be a set of points in $R^d$
+and $C_\epsilon(X )$ the \v{C}ech complex of the cover of
+$X$ by balls of radius $\epsilon/2$. Then there is chain of inclusions
+$$ R_{\epsilon^\prime}(X ) \subset C_\epsilon(X ) \subset R_\epsilon (X ) \ \  \textit{whenever} \ \ \ 
+\frac{\epsilon}{\epsilon^\prime} \geq \sqrt{\frac{2d}{d+1}}. $$ 
+Moreover, this ratio is the smallest for which the inclusions hold in general.
+\end{theorem}
+\textcolor{red}{Note}: this gives a sufficient condition to detect holes in sensor network coverage
+\begin{itemize}
+\item \v{C}ech complex is hard to compute while Rips is easy; 
+\item If a hole persists from $R_{\epsilon^\prime}$ to $R_\epsilon$, then it must exists in $C_\epsilon$.  
+\end{itemize}
+}
+
+\frame{
+\frametitle{Persistent 1-Homology in Rips Complexes}
+\begin{figure}[!h]
+%\centering
+\includegraphics[width=0.5\textwidth]{./figures/rips1.png}  
+\includegraphics[width=0.5\textwidth]{./figures/rips2.png}  
+\caption{Left: $R_{\epsilon^\prime}$; Right: $R_\epsilon$. The middle hole persists from $R_{\epsilon^\prime}$ to $R_\epsilon$.}
+\end{figure}
+}
+
+\subsection{Application: Genetic Recombination}
+\frame{
+	\frametitle{Genome-wide Maps of Human Recombination}
+\begin{figure}[!h]
+%\centering
+\includegraphics[width=0.7\textwidth]{./figures/raul2.pdf}  
+%\caption{Prof. WEI, Guowei at MSU, \emph{SIAM News 2017}}
+\end{figure}
+}
+
+\frame{
+	\frametitle{Persistent $\beta_1$ associated with recombination rates}
+\begin{figure}[!h]
+%\centering
+\includegraphics[width=0.7\textwidth]{./figures/raul1.pdf}  
+%\caption{Prof. WEI, Guowei at MSU, \emph{SIAM News 2017}}
+\end{figure}
+}
+
+
+\subsection{Application: Biomolecular Structure}
+\frame{
+	\frametitle{Persistent Homology Analysis of Biomolecular Data}
+\begin{figure}[!h]
+%\centering
+\includegraphics[width=0.6\textwidth]{./figures/guowei.pdf}  
+\caption{Prof. WEI, Guowei at MSU, \emph{SIAM News 2017}}
+\end{figure}
+}
+
+\frame{
+	\frametitle{Persistent Homology Analysis of Biomolecular Data}
+\begin{itemize}
+\item Persistent Homology as Barcodes provides multiscale analysis of protein 3D structure 
+\item Combined with machine learning (deep learning, random forests, boosting), it provides best free energy ranking for Set 1 (Stage 2) in D3R Grand Challenge 2, a worldwide competition in computer-aided drug design (\url{http://bit.ly/2h4Vm6q})
+\end{itemize}
+}
+
+
+\subsection{Application: Natural Image Patches}
+\frame{
+\frametitle{Application: Natural Image Statistics}
+\begin{itemize}
+\item \textcolor{blue}{G. Carlsson, V. de Silva, T. Ishkanov, A. Zomorodian} (2008) On the local behavior of spaces of natural images, \emph{International Journal of Computer Vision}, 76(1):1-12.
+\item An image taken by black and white digital camera can be
+viewed as a vector, with one coordinate for each pixel
+\item  Each pixel has a “gray scale” value, can be thought of as a real number (in reality, takes one of 255 values)
+\item Typical camera uses tens of thousands of pixels, so images lie in a very high dimensional space, call it pixel space, $\mathcal{P}$
+\end{itemize}
+}
+
+\frame{
+\frametitle{Natural Image Statistics}
+\begin{itemize}
+\item {\textbf{D. Mumford}}: What can be said about the set of images $\mathcal{I} \subseteq  \mathcal{P}$ one obtains when one takes many images with a digital camera?
+\item {\textbf{Lee, Mumford, Pedersen}}: Useful to study \textcolor{red}{local} structure of images statistically
+\end{itemize}
+}
+
+\frame{
+\frametitle{Natural Image Statistics}
+\begin{figure}[!h]
+%\centering
+\includegraphics[width=0.5\textwidth]{./figures/patch3x3.png}  
+\caption{$3\times 3$ patches in images}
+\end{figure}
+}
+
+\frame{
+\frametitle{Natural Image Statistics}
+Lee-Mumford-Pedersen [LMP] study only high contrast patches.
+\begin{itemize}
+\item Collect: $4.5 M$ high contrast patches from a collection of images obtained by van Hateren and van der Schaaf
+\item Normalize mean intensity by subtracting mean from each pixel value to obtain patches with mean intensity = 0
+\item Puts data on an 8-D hyperplane, $\approx R^8$
+\item Furthermore, normalize contrast by dividing by the norm, so obtain patches with norm = 1, whence data lies on a 7-D ellipsoid, 
+$\approx S^7$
+\end{itemize}
+}
+
+\frame{
+\frametitle{Natural Image Statistics: Primary Circle}
+High density subsets $\mathcal{M}(k=300,t=0.25)$:
+\begin{itemize}
+\item Codensity filter: $d_k(x)$ be the distance from $x$ to its $k$-th nearest neighbor
+\subitem the lower $d_k(x)$, the higher density of $x$ 
+\item Take $k=300$, the extract $5,000$ top $t=25\%$ densest points, which concentrate on a \textcolor{red}{primary circle}
+\end{itemize}
+\begin{figure}[!h]
+%\centering
+\includegraphics[width=0.5\textwidth]{./figures/mumford_k300t25.png}  
+%\caption{$3\times 3$ patches in images}
+\end{figure}
+}
+
+\frame{
+\frametitle{Natural Image Statistics: Three Circles}
+\begin{itemize}
+\item Take $k=15$, the extract $5,000$ top $25\%$ densest points, which shows persistent $\beta_1=5$, 3-circle model
+\end{itemize}
+\begin{figure}[!h]
+%\centering
+\includegraphics[width=0.7\textwidth]{./figures/mumford_k15t25.png}  
+%\caption{$3\times 3$ patches in images}
+\end{figure}
+}
+
+\frame{
+\frametitle{Natural Image Statistics: Three Circles}
+Generators for 3 circles
+\begin{figure}[!h]
+%\centering
+%\includegraphics[width=0.7\textwidth]{./figures/mumford_k300t25_1circle.png}  
+\includegraphics[width=0.7\textwidth]{./figures/mumford_3circle.png}  
+%\caption{$3\times 3$ patches in images}
+\end{figure}
+}
+
+
+\frame{
+\frametitle{Natural Image Statistics: Klein Bottle}
+\begin{figure}[!h]
+%\centering
+\includegraphics[width=0.7\textwidth]{./figures/mumford_klein.png}  
+%\caption{$3\times 3$ patches in images}
+\end{figure}
+}
+
+\frame{
+\frametitle{Natural Image Statistics: Klein Bottle Model}
+\begin{figure}[!h]
+%\centering
+\includegraphics[width=0.6\textwidth]{./figures/mumford_klein_model.png}  
+%\caption{$3\times 3$ patches in images}
+\end{figure}
+}
+
+%\subsection{Molecular Dynamics}
+%\frame{
+%\frametitle{Application III: Persistent Homology and Discrete Morse Theory}
+%\begin{itemize}
+%\item Persistent homology gives a pairing (birth-death) between a simplex and its co-dimensional one faces  
+%\item It leads to a particular implementation of Robin Forman's combinatorial gradient field
+%\item Thus Persistent homology is equivalent to \textcolor{red}{discrete Morse Theory by Robin Forman}
+%\end{itemize}
+%}
+%
+%\frame{
+%  \frametitle{Morse Theory and Reeb graph}
+% \begin{itemize}
+% \item a nice (Morse) function: $h: \X \to \R$, on a smooth manifold $\X$
+% \item topology of $\X$ reconstructed from level sets $h^{-1}(t)$ 
+% \item topological of $h^{-1}(t)$ only changes at `\textcolor{red}{critical values}' 
+% \item \textcolor{red}{Reeb graph}: a simplified version, contracting into points the connected components in $h^{-1}(t)$
+% \end{itemize}
+%\begin{figure}[t]
+%\centering
+%\begin{tabular}{c}
+%	\includegraphics[width=0.4\textwidth]{figures/Reeb_graph.pdf}  
+%\end{tabular}
+%	\caption{Construction of Reeb graph; $h$ maps each point on torus to its height.
+%	\label{torus}} 
+%\end{figure}
+%}
+%
+%\frame{
+%  \frametitle{In applications.}
+%  Reeb graph has found various applications in computational geometry, statistics under different names.
+%  \begin{itemize}
+%  \item computer science: contour trees, reeb graphs
+%  \item statistics: density cluster trees (Hartigan)
+%  \end{itemize}
+%  \begin{figure}
+%	\centering
+%	\includegraphics[width=0.6\textwidth]{figures/density-tree.pdf}
+%%	\caption{Non-Gaussian Clusters}
+%\end{figure}
+%} 
+%
+%\frame{
+%  \frametitle{Mapper: an extension for topological data analysis}
+%[{\it\tiny Singh-Memoli-Carlsson. Eurograph-PBG, 2007}] Given a data set $\X$,
+%  
+%  \begin{itemize}
+%  \item choose a \textcolor{red}{filter} map $h:\X\to T$, where $T$ is a topological space such as $\R$, $S^1$, $\R^d$, etc.
+%  \item choose a cover $T \subseteq \cup_\alpha U_\alpha$ 
+%  \item \textcolor{red}{cluster/partite} level sets $h^{-1}(U_\alpha)$ into $V_{\alpha, \beta}$ 
+%  \item \textcolor{red}{graph} representation: a node for each $V_{\alpha,\beta}$, an edge between $(V_{\alpha_1,\beta_1},V_{\alpha_2,\beta_2})$ iff $U_{\alpha_1} \cap U_{\alpha_2} \neq \emptyset$ and $V_{\alpha_1,\beta_1}\cap V_{\alpha_2,\beta_2}\neq \emptyset$.
+%  \item extendable to \textcolor{red}{simplicial complex representation}.  
+%  \end{itemize}
+% 
+% \medskip
+% 
+% Note: it extends \textcolor{blue}{Morse theory} from $\R$ to general topological space $T$; may lead to a particular implementation of \textcolor{blue}{Nerve theorem} through filter map $h$. 
+%}
+%
+%\frame{
+%  \frametitle{An example with real valued filter}
+%\begin{figure}[t]
+%\centering
+%\begin{tabular}{c}
+%	\includegraphics[width=0.4\textwidth]{figures/Mapper_graph.pdf}  
+%\end{tabular}
+%	\caption{An illustration of Mapper.} 
+%\end{figure}
+%Note: 
+%\begin{itemize}
+%\item degree-one nodes contain local minima/maxima;
+%\item degree-three nodes contain saddle points (critical points);
+%\item degree-two nodes consist of regular points 
+%\end{itemize}
+%}
+
+
+%\subsection{Progression Analysis of Disease}
+%\frame{
+%  \frametitle{Application IV: Progression Analysis for Breast Cancer}
+%\begin{itemize}
+%\item \textcolor{blue}{Nicolau, Levine, Carlsson}, \emph{PNAS}, 2010
+%\item Deviation functions from normal tissues are used as filters (Morse-type functions)
+%\item Mapper (Reeb Graph) with such filters leads to Progression Analysis of Disease
+%\end{itemize}
+%}
+%
+%
+%\frame{
+%  \frametitle{PAD analysis of the NKI data}
+%\begin{figure}[!h] 
+%\begin{center}
+%\begin{tabular}{c}
+%\centerline{\includegraphics[width=0.9\textwidth]{figures/nicolau.png}} 
+%\end{tabular}
+%%\caption{Nicolau, Levine, Carlsson, PNAS, 2010 }
+%\end{center}
+%\end{figure}
+%}
+%
+
+
+%\frame{
+%  \frametitle{Transition Counts: 2ps lag time}
+% \begin{figure}
+%	\centering
+%	\includegraphics[width=0.8\textwidth]{figures/transit9_yangjian.pdf}
+%\end{figure}
+%\begin{itemize}
+%\item The two intermediate states, are on-pathways; the inner base-pair formation
+%is easier in proceeding than backing ($.15/.07$), while the end base-pair formed more reluctant ($.12/.09)$  
+%\item Note that this is not a Markov State Model.
+%\end{itemize} 
+%}
+
+
+
+%\frame{
+%\frametitle{From Topology to Geometry: Hodge Theory}
+%\begin{itemize}
+%\item When one studies rational homology, Laplacians can be defined  
+%\item Kernels of Laplacians, i.e. harmonics, gives a particular basis to represent rational homology
+%\item Such a basis often gives more information about the metrics, or geometry of simplicial complex
+%\item In general, filtrations can be reflected as metric information in Laplacians
+%\item \textcolor{red}{Open}: filtrations converted to discrete Morse functions, then Witten-Morse deformations on Laplacians
+%\end{itemize}
+%}
+
+
+
+
+%
+%\section[Morse Method in MD]{Molecular Dynamics and Morse Theory}
+%
+%\frame{
+%  \frametitle{Molecular Dynamics and Morse Theory}
+%  Collaborators:
+%  \begin{itemize}
+%  \item Biology/Chemistry: \textcolor{red}{Xuhui Huang, Greg Bowman, Vijay Pande}
+%  \item Computer Science: \textcolor{red}{Jian Sun, Leo Guibas}
+%  \item Mathematics: \textcolor{red}{Michael Lesnick, Gurjeet Singh, Gunnar Carlsson}
+%  \end{itemize}
+%  
+%  Thanks to
+%  \begin{itemize}
+%  \item Michael Levitt (Stanford)
+%  \item John Chodera (UCB)
+%  \item Wing-Hung Wong (Stanford)
+%  \item Nancy Zhang (Stanford)
+%  \end{itemize}
+%}
+%
+%\subsection{Challenges in RNA Haripin Folding}
+%
+%
+%\frame{
+%  \frametitle{SREMD Simulations}
+%  
+%\begin{columns} 
+%\begin{column}{0.22\textwidth} 
+%\begin{figure}[h]
+%\centering
+%\begin{tabular}{c}
+%	\includegraphics[width=1.0\textwidth]{figures/foldingathome0.pdf} \\
+%%	\caption{Over 250,000 CPUs now participate in Folding$@$home }
+%	\includegraphics[width=0.9\textwidth]{figures/box.pdf}  \\
+%	Simulation Box.
+%\end{tabular}
+%\end{figure}
+%\end{column} 
+%\begin{column}{0.78\textwidth} 
+%[{\tiny \it Bowman, Huang, Y., Sun, ... Vijay. JACS, 2008}] 
+%\smallskip
+%\begin{itemize}
+%\item 2800 SREMD (Serial Replica Exchange Molecular Dynamics) simulations with RNA hairpin (5'-GGGCGCAAGCCU-3')
+%\item 389 RNA atoms, $\sim$4000 water and 11 $Na^+$ 
+%\item SREMD random walks in temperature space (56 ladders from 285K to 646K) with molecular dynamic trajectories
+%\item 210,000 ns simulations with $\sim$105,000,000 configurations 
+%\item Unfortunately, sampling still \textcolor{red}{not converged}!
+%\end{itemize}
+%\end{column} 
+%\end{columns} 
+%}
+%
+%\frame{
+% \frametitle{Challenges for Data Analysis}
+%\begin{itemize}
+%\item Massive volume and high dimensionality: $100M$ samples in $12K$ Cartesian coordinates
+%$\Rightarrow$ \textcolor{blue}{contact maps} as $55$-bit string
+%\item \textcolor{red}{Looking for a needle in a haystack}: 
+%\subitem intermediates/transition states of interests are of \textcolor{blue}{low-density} 
+%\subitem folded/unfolded states are dominant
+%\item \textcolor{red}{Samples are not in equilibrium distribution} 
+%\begin{figure}[t] 
+%\begin{tabular}{cc}
+%\includegraphics[width=0.2\columnwidth]{figures/gcaa.pdf} &
+%\includegraphics[width=0.2\columnwidth]{figures/native_contactmap.pdf}\\
+%(a)&(b)
+%\end{tabular}
+%\caption{(a) NMR structure of the GCAA tetraloop.  (b) Contact map.}
+%\end{figure}
+%\end{itemize}
+%}
+%
+%\frame{
+% \frametitle{Needle through magnifying glasses: Conditional distributions}
+% Conditioning on the region where intermediate states may host:
+%\begin{itemize}
+%\item folding/unfolding events
+%\begin{columns}
+%\begin{column}{0.6\textwidth}
+%\begin{figure}[h]
+%\centering
+%\includegraphics[width=0.8\columnwidth]{figures/events.pdf}
+%\end{figure}
+%\end{column}
+%\begin{column}{0.4\textwidth}
+%\begin{itemize}
+%\item 760 unfolding events;
+%\item 550 folding events;
+%\end{itemize}
+%\end{column}
+%\end{columns} 
+%\item biased toward the target states (folded/extended)
+%\end{itemize}
+%Note: applicable to non-equilibrium distributed data.
+%}
+%
+%\frame{
+%  \frametitle{Our strategy}
+%\textcolor{red}{Problem:} How to separate sparse intermediates from dense folded/unfolded structures? 
+%\begin{solution} 
+%\center{\textcolor{red}{stratify data into density level sets, and} }
+%\center{\textcolor{red}{cluster on each level set} }
+%\end{solution}
+%
+%\medskip
+%
+%\textcolor{red}{But}, can we organize those clusters in a systematic way? 
+%\begin{itemize}
+%\item Yes, \textcolor{blue}{Morse theory} in mathematics provides an inspiration...
+%\end{itemize}
+%}
+%
+%\subsection{Morse Theory, Reeb Graph, and Mapper}
+%
+%
+%\frame{
+%  \frametitle{Transition Counts: 2ps lag time}
+% \begin{figure}
+%	\centering
+%	\includegraphics[width=0.8\textwidth]{figures/transit9_yangjian.pdf}
+%\end{figure}
+%\begin{itemize}
+%\item The two intermediate states, are on-pathways; the inner base-pair formation
+%is easier in proceeding than backing ($.15/.07$), while the end base-pair formed more reluctant ($.12/.09)$  
+%\item Note that this is not a Markov State Model.
+%\end{itemize} 
+%}
+
+%\frame{
+%  \frametitle{Biological Suggestions from Mapper Results}
+%  [{\tiny \it Bowman, et al. JACS 2008}]
+%  \begin{itemize}
+% \item Folding and unfolding follows \textcolor{red}{different pathways}
+% \item For folding pathways, there are \textcolor{red}{multiple intermediate states}
+% \subitem a dominant one with inner/closing stem base-pair formed
+% \subitem a less dominant one with outer/end stem base-pair formed
+% \item This in the first time provides \textcolor{red}{structural evidence} from simulations in support of multistate hypothesis on folding pathways
+%  \end{itemize}
+%  Reproducible research: data and codes to reproduce those figures are available at
+%  
+%  \textcolor{blue}{\tt https://simtk.org/home/rna-mapper}
+%}
+%
+%\frame{
+% \frametitle{Future direction: Transition Networks}
+% \begin{figure}
+%	\centering
+%	\includegraphics[width=0.7\textwidth]{figures/MRTN.pdf}
+% \end{figure}
+%}
+%
+%\section[Hodge Rank]{Rank Aggregation and Hodge Theory}
+%
+%\frame{
+%  \frametitle{Rank Aggregation and Hodge Theory}
+%    Collaborators:
+%  \begin{itemize}
+%  \item Mathematics: \textcolor{red}{Lek-Heng Lim} (UCB)
+%  \item ICME and Computer Science: \textcolor{red}{Xiaoye Jiang} (student)
+%  \item Management Science and Engineering: \textcolor{red}{Yinyu Ye}
+%  \end{itemize}
+%  
+%  Thanks to
+%  \begin{columns}
+%  \begin{column}{0.47\textwidth}
+%  \begin{itemize}
+%  \item Gunnar Carlsson (Stanford) 
+%  \item Vin de Silva (Pomona)
+%  \item Persi Diaconis (Stanford) 
+%  \item Leo Guibas (Stanford)
+%  \item Fei Han (Stanford)
+%  \end{itemize}
+%  \end{column}
+%  \begin{column}{0.53\textwidth}
+%  \begin{itemize}
+%  \item Ming Ma (Beijing Institute of Technology) 
+%  \item Art Owen (Stanford)
+%  \item Steve Smale (TTI-C \& UCB) 
+%  \item Don Saari (UCI)
+%  \item Bin Yu (UCB)
+%  \end{itemize}
+%  \end{column}
+%  \end{columns}
+%}
+%
+%\frame{
+%\frametitle{Hodge decomposition}
+%
+%\begin{itemize}
+%\item \textbf{Vector calculus:} Helmholtz's decomposition, ie.\ vector fields on
+%\textit{nice domains} may be resolved into irrotational (curl-free) and
+%solenoidal (divergence-free) component vector fields
+%\[
+%\mathbf{F}=-\nabla\varphi+\nabla\times\mathbf{A}%
+%\]
+%$\varphi$ scalar potential, $\mathbf{A}$ vector potential.
+%
+%\item \textbf{Linear algebra:} additive orthogonal decomposition of a
+%skew-symmetric matrix into three skew-symmetric matrices
+%\[
+%W = W_{1} + W_{2} + W_{3}
+%\]
+%$W_{1} = \mathbf{v}\mathbf{e}^{T} - \mathbf{e} \mathbf{v}^{T}$, $W_{2}$
+%clique-consistent, $W_{3}$ inconsistent.
+%
+%\item \textbf{Graph theory:} orthogonal decomposition of network flows into
+%acyclic and cyclic components.
+%\end{itemize}
+%}
+%
+%\frame{ 
+%\frametitle{Ranking on networks (graphs)}
+%\begin{itemize}
+%\item Multicriteria rank/decision systems
+%
+%\begin{itemize}
+%\item Amazon or Netflix's recommendation system (user-product)
+%
+%\item Interest ranking in social networks (person-interest)
+%
+%\item S\&P index (time-price)
+%
+%\item Voting (voter-candidate)
+%\end{itemize}
+%
+%\item Peer review systems
+%
+%\begin{itemize}
+%\item publication citation systems (paper-paper)
+%
+%\item Google's webpage ranking (web-web)
+%
+%\item eBay's reputation system (customer-customer)
+%\end{itemize}
+%\end{itemize}
+%}
+%
+%\frame{
+%\frametitle{Characteristics}
+%Aforementioned ranking data often
+%
+%\begin{itemize}
+%\item incomplete: typically about 1\% 
+%
+%\item imbalanced: heterogeneously distributed votes 
+%
+%\item cardinal: given in terms of scores or stochastic choices
+%\end{itemize}
+%
+%Implicitly or explicitly, ranking data may be viewed to live on a simple graph
+%$G=(V,E)$, where
+%
+%\begin{itemize}
+%\item $V$: set of alternatives (products, interests, etc) to be ranked
+%
+%\item $E$: pairs of alternatives to be compared
+%\end{itemize}
+%}
+%
+%\frame{
+%  \frametitle{Example I: Netflix Customer-Product Rating}
+%
+%  \begin{example}[Netflix Customer-Product Rating]
+%  \begin{itemize}
+%  \item $480189$-by-$17770$ customer-product rating matrix $X$
+%  \item $X$ contains $98.82\%$ missing values
+%  \end{itemize}
+%  \end{example}
+%
+% However,
+%
+%\begin{itemize}
+%\item pairwise comparison graph $G=(V,E)$ is very \textcolor{red}{dense}!
+%
+%\item only $0.22\%$ edges are missed, \textcolor{red}{almost a complete graph}
+%
+%\item rank aggregation may be carried out without estimating missing values
+%
+%\item \textcolor{red}{imbalanced}: number of raters on $e\in E$ varies
+%\end{itemize}
+%
+%\textbf{Caveat:} we are not trying to solve the Netflix prize problem
+%}
+%
+%\frame{
+%\frametitle{Netflix example continued}
+%
+%The \textbf{first order} statistics, mean score for each product, is often
+%inadequate because of the following:
+%
+%\begin{itemize}
+%\item most customers would rate just a \textcolor{red}{very small portion} of the products
+%
+%\item different products might have different raters, whence mean scores
+%involve noise due to \textcolor{red}{arbitrary individual rating scales}
+%\end{itemize}
+%}
+%
+%\frame{
+%\frametitle{Temporal Drifts of Netflix Mean Scores}
+%\begin{columns}
+%\begin{column}{0.7\textwidth}
+%\begin{figure}[h]
+%\centering
+%\centerline{\includegraphics[width=0.8\textwidth]{figures/6movies_drifts.pdf}} 
+%\end{figure}
+%\end{column}
+%\begin{column}{0.3\textwidth}
+%\begin{itemize}
+%\item How about \textcolor{red}{high order} statistics?
+%\item Pairwise comparison removes such drifts. 
+%\end{itemize}
+%\end{column}
+%\end{columns} 
+%}
+%
+%\frame{
+%  \frametitle{From $1^{st}$ Order to $2^{nd}$ Order: Pairwise Rankings}
+%  \begin{itemize}
+%  \item \textcolor{red}{Linear Model}: mean score difference between product $i$ and $j$ over all customers who have rated both of them,
+%\[  w_{ij} = \frac{\sum_k (X_{kj} - X_{ki})}{\#\{k: X_{ki}, X_{kj}\text{ exist}\}}, \]
+%is \textcolor{red}{translation invariant}.
+% \item \textcolor{red}{Log-linear Model}:
+%\[ w_{ij} =\frac{\sum_{k}(\log X_{kj}-\log X_{ki})}{\#\{k:X_{ki},X_{kj}\text{
+%exist}\}}, \]
+%is \textcolor{red}{scale invariant}.
+%
+%  \end{itemize}
+%}
+%
+%\frame{
+%  \frametitle{More invariant}
+%
+%  \begin{itemize}
+%   \item \textcolor{red}{Linear Probability Model}: the probability that product $j$ is preferred to $i$ in excess of a purely random choice,
+%\[  w_{ij} = \Pr \{k:X_{kj} > X_{ki}\} - \frac{1}{2}.\]
+%This is \textcolor{red}{invariant up to a monotone transformation}.
+% 
+%  \item \textcolor{red}{Bradley-Terry Model}: logarithmic odd ratio (logit)
+%\[
+%w_{ij}=\log\frac{\Pr\{k:X_{kj}>X_{ki}\}}{\Pr\{k:X_{kj}<X_{ki}\}}.
+%\]
+%\textcolor{red}{Invariant up to monotone transformation}.
+%\end{itemize}
+%}
+%
+%\frame{
+%\frametitle{Pairwise ranking graph for IMDb top 20 movies}%
+%%EndExpansion
+%\begin{figure}[ptb]
+%\includegraphics[width=0.65\textwidth]{figures/imdb20_1.pdf}
+%%\resizebox{9cm}{!}{\input{figures/Hodge1.pstex_t}}
+%\caption{Pairwise rankings are network flows}%
+%\end{figure}%
+%}
+%
+%\frame{
+%
+%  \frametitle{Example II: Purely Exchange Economics}
+%  
+%  \begin{example}[Pairwise ranking in exchange market]
+%  \begin{itemize} 
+%  \item $n$ goods $V=\{1,\ldots,n\}$ in an exchange market, with an
+%exchange rate matrix $A$, such that 
+%\[ 1 \text{ unit }i = a_{ij} \text{ unit } j, \qquad a_{ij}>0 .\]
+%which is a \textcolor{red}{reciprocal matrix}, i.e.\ $a_{ij}=1/a_{ji}$
+%  \item Ideally, a product triple $(i,j,k)$ is called \textcolor{red}{triangular arbitrage-free}, if $a_{ij} a_{jk} = a_{ik}$
+%  \item \textcolor{red}{Money} (universal equivalent): does there exist a universal equivalent with pricing function $p: V\to \R^+$, such that
+%  \[ a_{ij} = p_j / p_i ?\]
+%  \end{itemize}
+%  \end{example}
+%}
+%
+%\frame{
+%  \frametitle{From Pairwise to Global}
+%  \begin{itemize}
+%    \item Under the logarithmic map, $w_{ij} = \log a_{ij}$, we have an equivalent theory:
+%    \subitem the \textcolor{red}{triangular arbitrage-free} is equivalent to
+%\[ w_{ij} + w_{jk} + w_{ki} = 0 \]
+%  \subitem \textcolor{red}{universal equivalent} is a global ranking $q: V\to \R$ ($q_i=\log p_i$) such that
+%  \[ w_{ij} = q_j - q_i  =:(\textcolor{red}{\delta_0} q)(i,j) \]
+%  \item Here 
+%  \subitem \textcolor{red}{Global ranking} $\Leftrightarrow$ universal equivalent (price)
+%  \subitem \textcolor{red}{Pairwise ranking} $\Leftrightarrow$ exchange rates
+%  \end{itemize}
+%}
+%
+%\frame{
+%  \frametitle{Observations}
+%  In both examples,
+%  \begin{itemize}
+%  \item contain \textcolor{red}{cardinal} information 
+%  \item involve \textcolor{red}{pairwise} comparisons
+%  \end{itemize} 
+%  \medskip
+%  
+%  \textcolor{blue}{How important are they?}
+%}
+%
+%\frame{
+%
+%  \frametitle{Ordinal Rank Aggregation}
+%
+%  \begin{itemize}
+%  \item \textcolor{red}{Problem}: given a set of partial/total order $\{\succeq_i: i=1,\ldots,n\}$ on a common set $V$,
+%find
+%\[ (\succeq_1,\ldots, \succeq_n) \mapsto \succeq^\ast, \]
+%as a partial order on $V$, satisfying certain \emph{optimal} condition.
+%  \item Examples: 
+%  \subitem voting 
+%  \subitem Social Choice Theory
+%  \item \textcolor{red}{Notes}:
+%  \subitem Impossibility Theorems (Arrow and Sen)
+%  \subitem NP-Hardness in solving Kemeny optimization
+%  \subitem Harmonic analysis on permutation group $S_n$ is impractical for large $n$ 
+%  \end{itemize}
+%}
+%
+%\frame{
+%  \frametitle{Cardinal Rank Aggregation in Our Approach}
+%
+%\begin{problem}
+%Does there exist a global ranking function, $v: V\to\mathbb{R}$, such that
+%\[
+%w_{ij} = v_{j} - v_{i} =: \delta_{0} (v) (i,j) ?
+%\]
+%
+%\end{problem}
+%
+%Equivalently, does there exists a scalar field $v:V\rightarrow\mathbb{R}$
+%whose gradient field gives the flow $w$? ie.\ is $w$ \textcolor{red}{integrable}?
+%%  \begin{itemize}
+%%  \item \textcolor{red}{Problem}: given a set of functions $f_i:V\to \R$ $(i=1\ldots,n)$, find 
+%%  \[ (f_1,\ldots,f_n) \mapsto f^\ast \]
+%%  as a function on $V$, satisfying certain \emph{optimal} condition.
+%%  \item \textcolor{red}{Notes}
+%%  \subitem relaxations leave rooms for `possibility' 
+%%  \subitem ordinal rankings induced from cardinal rankings, but with information loss
+%%  \end{itemize}
+%}
+%
+%\frame{
+%\frametitle{Answer: not always!}%
+%%EndExpansion
+%
+%
+%As in multivariate calculus where non-integrable vector fields exist, similarly we have
+%
+%\begin{figure}[ptb]
+%\includegraphics[width=3cm]{figures/cyclic0.pdf}
+%%\resizebox{3cm}{!}{\input{figures/harmonic.pstex_t}}
+%\includegraphics[width=3cm]{figures/harmonic.pdf}
+%\caption{No global ranking
+%$v$ gives $w_{ij}=v_{j}-v_{i}$: (a) triangular cyclic, note $w_{AB}%
+%+w_{BC}+w_{CA}\neq0$; (b) it contains a 4-node cyclic flow $A\rightarrow
+%C\rightarrow D\rightarrow E\rightarrow A$, note on a $3$-clique $\{A,B,C\}$
+%(also $\{A,E,F\}$), $w_{AB}+w_{BC}+w_{CA}=0$ }%
+%\end{figure}%
+%}
+%
+%\frame{
+%\frametitle{Triangular transitivity}%
+%%EndExpansion
+%
+%
+%\begin{fact}
+%$W=[w_{ij}]$ skew symmetric associated with graph $G = (V, E)$. If
+%$w_{ij}=v_{j}-v_{i}$ for all $\{i,j\} \in E$, then $w_{ij} +w_{jk}+w_{ki}=0$
+%for all $3$-cliques $\{i,j,k\}$.
+%\end{fact}
+%
+%\textcolor{red}{Transitivity subspace}:
+%\[
+%\{W\text{ skew symmetric}\mid w_{ij}+w_{jk}+w_{ki}=0\text{ for all
+%$3$-cliques}\}
+%\]
+%Example in the last slide, (a) lies outside; (b) lies in this subspace, but
+%not a gradient flow.
+%}
+%
+%\frame{
+%\frametitle{Hodge theory: graph theoretic}%
+%%EndExpansion
+%
+%
+%\textcolor{red}{Orthogonal decomposition} of network flows on $G$ into
+%\[
+%\text{gradient flow} + \text{globally cyclic} + \text{locally cyclic}
+%\]
+%where the first two components make up \textcolor{blue}{transitive subspace} and
+%
+%\begin{itemize}
+%\item gradient flow is integrable to give a global ranking
+%
+%\item example (b) is locally (triangularly) acyclic, but cyclic on large scale
+%
+%\item example (a) is locally (triangularly) cyclic
+%\end{itemize}
+%}
+%
+%%\frame{
+%
+%%  \frametitle{Global, Local, and Pairwise Rankings}
+%
+%%  \begin{itemize}
+%%  \item<1-> \textcolor{red}{Global} ranking is a function on $V$, $f: V\to \R$ 
+%%  \item<1-> \textcolor{red}{Local} (partial) ranking: restriction of global ranking on a subset $U$, $f^\prime: U\to \R$
+%%  \item<1-> \textcolor{red}{Pairwise} ranking: $g: V\times V\to \R$ (with $g_{ij}=-g_{ji}$)
+%%  \subitem Note: pairwise rankings are simply \textcolor{red}{skew-symmetric} matrices $\ASL(n)$ or certain equivalence classes in $\ASL(n)$. Also we may view pairwise rankings as \textcolor{red}{weighted digraphs}.
+%%  \end{itemize}
+%%}
+%
+%%\frame{
+%
+%%  \frametitle{Why Pairwise Ranking?}
+%
+%%  \begin{itemize}
+%%  \item Human mind can't make preference judgements on moderately large sets (e.g.\ no more than $7\pm 2$ in psychology study)
+%%  \item But human can do pairwise comparison more easily and accurately
+%%  \item Pairwise ranking naturally arises in tournaments, exchange Economics, etc.
+%%  \item Pairwise ranking may reduce the bias caused by the arbitrariness of rating scale
+%%  \item Pairwise ranking may contain \textcolor{red}{more information} than global ranking (to be seen soon)!
+%%  \end{itemize}
+%%}
+%
+%
+%
+%\subsection{Discrete Exterior Calculus and Combinatorial Laplacian}
+%
+%%\frame{
+%%  \frametitle{Our Main Theme}
+%%  Below we'll outline an approach to analyze 
+%%  \begin{itemize}
+%%  \item \textcolor{red}{cardinal}, and
+%%  \item \textcolor{red}{pairwise} 
+%%  \end{itemize}
+%%  rankings, in a perspective from discrete calculus. 
+%%  
+%%  \medskip
+%%  
+%%  In a brief, we'll reach an \textcolor{red}{orthogonal decomposition} of pairwise rankings, by \textcolor{red}{Hodge Theory},
+%%  \[ \textcolor{red}{\text{pairwise} = \text{global} + \text{consistent cyclic} + \text{inconsistent cyclic} }\]
+%% }
+%
+%%\frame{\tableofcontents[current]}
+%
+%\frame{
+%  \frametitle{Clique Complex of a Graph}
+%Extend graph $G=(V,E)$ to a \textcolor{red}{simplicial complex} $\mathcal{K}(G)$ by
+%attaching triangles
+%  \begin{itemize}
+%  \item 0-simplices $\mathcal{K}_0(G)$: $V$
+%  \item 1-simplices $\mathcal{K}_1(G)$: $E$
+%  \item 2-simplices $\mathcal{K}_2(G)$: 3-cliques $\{i,j,k\}$ such that every edge exists in $E$
+%  \item $k$-simplices $\mathcal{K}_{k}(G)$: $(k+1)$-cliques $\{i_{0},\dots
+%,i_{k}\}$ of $G$
+%  \end{itemize}
+%  \textcolor{blue}{Note}: it suffices here to construct $\mathcal{K}(G)$ up to dimension \textcolor{red}{2}!
+%}
+%
+%\frame{
+%
+%  \frametitle{Discrete $k$-forms or Cochains on $\mathcal{K}(G)$}
+%   
+%  \begin{itemize} 
+%  \item  \textcolor{red}{$k$-forms or cochains} \[
+%C^{k}(\mathcal{K}(G),\mathbb{R})=\{u:\mathcal{K}_{k+1}(G)\rightarrow
+%\mathbb{R},u_{i_{\sigma(0)},\dots,i_{\sigma(k)}}=\operatorname*{sign}%
+%(\sigma)u_{i_{0},\ldots,i_{k}}\}
+%\]
+%for $(i_{0},\ldots,i_{k})\in\mathcal{K}_{k+1}(G)$, where $\sigma
+%\in\mathfrak{S}_{k+1}$ is a permutation on $(0,\dots,k)$.
+%  \subitem global ranking: 0-forms $v\in C^0(K,\R)\cong \R^{n}$
+%  \subitem pairwise ranking: 1-forms $w\in C^1(K,\R)$, $w_{ij}=-w_{ji}$
+%  \item May put metrics/inner products on $C^{k}(\mathcal{K}(G),\mathbb{R})$, e.g. the following metric on $1$-forms for imbalance issue
+%\[
+%\left\langle w_{ij},\omega_{ij}\right\rangle _{D}=\sum_{(i,j)\in E}%
+%D_{ij}w_{ij}\omega_{ij}%
+%\]
+%where
+%\[
+%D_{ij}=\lvert\{\text{customers who rate both $i$ and $j$}\}\rvert.
+%\]
+%  \end{itemize}   
+%}
+%
+%\frame{
+%
+%  \frametitle{Coboundary Maps}
+%  \begin{itemize}
+%  \item $k$-dimensional \textcolor{red}{coboundary maps} $\delta_k : C^k(V,\R) \to C^{k+1}(V,\R)$ are defined as the \textcolor{red}{alternating difference} operator 
+%  \[ (\delta_k u)(i_0,\ldots,i_{k+1}) = \sum_{j=0}^{k+1} (-1)^{j+1} u(i_0,\ldots,i_{j-1},i_{j+1},\ldots,i_{k+1}) \]
+%  \item $\delta_k$ plays the role of \textcolor{red}{differentiation} 
+%  \item $\delta_{k+1}\circ\delta_k = 0$
+%  \item In particular,
+%  \subitem $(\delta_{0} v) (i,j)= v_{j} - v_{i}=:(\operatorname*{\textcolor{red}{grad}} v)(i,j)$
+%  \subitem  $(\delta_{1} w) (i,j,k) = (\pm)( w_{ij}+ w_{jk} + w_{ki})=:(\operatorname*{\textcolor{red}{curl}} w)(i,j,k)$ 
+%  \end{itemize}
+%}
+%
+%\frame{
+%\frametitle{Combinatorial Curl and Divergence}
+%For each triangle $\{i,j,k\}$, the \textcolor{red}{combinatorial curl}
+%\[
+%(\operatorname*{curl} w)(i,j,k) = (\delta_{1}w )(i,j,k) = w_{ij} + w_{jk} +
+%w_{ki}
+%\]
+%measures the total flow-sum along the loop $i\to j\to k\to i$.
+%
+%\begin{itemize}
+%\item $(\delta_{1}w )(i,j,k) = 0$ implies the flow is
+%\textcolor{blue}{path-independent}, which defines the \textcolor{blue}{triangular transitivity
+%subspace}.
+%\end{itemize}
+%
+%For each alternative $i\in V$, the \textcolor{red}{combinatorial divergence}
+%\[
+%(\operatorname*{div} w)(i) := - (\delta_{0}^{T} w )(i) := \sum w_{i\ast}
+%\]
+%measures the \textcolor{blue}{inflow-outflow sum} at $i$.
+%
+%\begin{itemize}
+%\item $(\delta_{0}^{T} w )(i)=0$ implies alternative $i$ is preference-neutral
+%in all pairwise comparisons.
+%
+%\item divergence-free flow $\delta_{0}^{T} w =0$ is \textcolor{blue}{cyclic}
+%\end{itemize}
+%}
+%
+%%\frame{
+%%  \frametitle{A View from Discrete Calculus}
+%
+%%We have the following cochain complex
+%%\[
+%%C^0(K,\R) \xrightarrow{\delta_0} C^1(K,\R) \xrightarrow{\delta_1}
+%%C^2(K,\R),
+%%\]
+%
+%%in other words,
+%
+%%\[ 
+%%\textcolor{red}{Global \xrightarrow{\grad} Pairwise \xrightarrow{\curl} \text{Triplewise}}
+%%\]
+%%and 
+%%\[ \textcolor{red}{\curl \circ \grad (Global\ rankings) = 0} \]
+%%} 
+%
+%%\frame{
+%%  \frametitle{What does it tell us?}
+%%\[ 
+%%\textcolor{red}{Global \xrightarrow{\grad} Pairwise \xrightarrow{\curl} \text{3-alternating tensors}}
+%%\]
+%%  \begin{itemize}
+%%  \item \textcolor{red}{$\grad(Global) $} (i.e. $\im(\delta_0)$): a \textcolor{blue}{proper} subset of pairwise rankings induced from global
+%%  \item \textcolor{red}{$\curl(Pairwise)$} (i.e. $\im(\delta_1)$): measures the \textcolor{blue}{consistency}/triangular arbitrage on triangle $\{i,j,k\}$
+%%  \[  (\delta_1 g) (i,j,k)=g_{ij}+g_{jk}+g_{ki}  \]
+%%  \subitem \textcolor{red}{$\ker(\curl)$} (i.e. $\ker(\delta_1)$): \textcolor{blue}{consistent, curl-free, triangular arbitrage-free}, in particular ---
+%%  \subitem \textcolor{red}{$\curl\circ \grad (Global)=0$} (i.e. $\delta_1\circ\delta_0=0$) says global rankings are consistent/curl-free
+%%\end{itemize}
+%%}
+%
+%%\frame{
+%%  \frametitle{Reverse direction: conjugate operators}
+%%  \[ \textcolor{red}{Gradient \xleftarrow{\grad^\ast (=:-\dive)} Pairwise \xleftarrow{curl^\ast} \text{3-alternating}\ C^2(K,\R) } \]
+%%  \begin{itemize}
+%%  \item \textcolor{red}{$\grad^\ast$}: $\delta_0^T$ under Euclidean inner product, gives the total \textcolor{blue}{inflow-outflow difference} at each vertex (\textcolor{red}{negative divergence})
+%%  \[ (\delta_0^T g)(i) = \sum g_{\ast i}- \sum g_{i\ast} \]
+%%  \subitem $\ker(\delta_0^T)$, as \textcolor{red}{divergence-free}, is \textcolor{red}{cyclic} (interior/boundary)
+%%  \item \textcolor{red}{$\curl^\ast$}: $\delta_1^T$, gives \textcolor{blue}{interior cyclic} pairwise rankings along triangles in $K_2$, which are \textcolor{blue}{inconsistent}
+%%  \end{itemize}
+%%}
+%
+%\subsection{Combinatorial Laplacian Operator}
+%\frame{
+%  \frametitle{Combinatorial Laplacian}
+%  
+%  \begin{itemize}
+%  \item Define the $k$-dimensional \textcolor{red}{combinatorial Laplacian}, $\Delta_k:C^k \to C^k$ by
+%\[ \Delta_k = \delta_{k-1} \delta_{k-1}^T + \delta_k^T \delta_k, \qquad k>0 \]   
+%  \item $k=0$, $\Delta_0 = \delta_0^T \delta_0$ is the well-known \textcolor{red}{graph Laplacian}
+%  \item $k=1$, 
+%\[ \textcolor{red}{\Delta_1 = \curl \circ \curl^\ast - \dive \circ \grad} \]
+%  \item Important Properties: 
+%  \subitem $\Delta_k$ positive semi-definite
+%  \subitem $\ker(\Delta_k)=\ker(\delta_{k-1}^T)\cap\ker(\delta_k)$: $k$-\textcolor{red}{Harmonics}, dimension equals to $k$-th Betti number
+%  \subitem Hodge Decomposition Theorem
+%  \end{itemize}
+%}
+%
+%\subsection{Hodge Theory}
+%\frame{
+%  \frametitle{Hodge Decomposition Theorem}
+%
+%\begin{theorem}
+%The space of $k$-forms (cochains) $C^k(\mathcal{K}(G),\R)$, admits an orthogonal decomposition into three
+%\[
+%C^k(\mathcal{K}(G),\R) = \im (\delta_{k-1}) \oplus H_k \oplus \im(\delta_k^T)
+%\]
+%where
+%\[
+%H_k = \ker(\delta_{k-1}) \cap \ker(\delta_k^T) = \ker (\Delta_k).
+%\]
+%\end{theorem}
+%}
+%
+%\frame{
+%  \frametitle{In particular $k=1$ for pairwise rankings}
+%  \begin{figure}
+%  \includegraphics[width=0.7\textwidth]{figures/Hodge2.pdf}
+%  \caption{Hodge Decomposition for Pairwise Rankings}
+%  \end{figure}
+%}
+%
+%\frame{
+%\frametitle{Harmonic rankings: locally consistent but globally inconsistent}
+%\begin{columns}
+%\begin{column}{0.5\textwidth}
+%\begin{figure}
+%%\resizebox{3cm}{!}{\input{figures/harmonic.pstex_t}}
+%\includegraphics[width=0.8\textwidth]{figures/xiaoye05.pdf}
+%\caption{A locally consistent but globally cyclic harmonic ranking.}
+%\end{figure}
+%\end{column}
+%\begin{column}{0.5\textwidth}
+%\begin{figure}
+%\includegraphics[width=0.8\textwidth]{figures/harm25_tmp.pdf}
+%%\includegraphics[width=0.8\textwidth]{figures/harm25_tmp.pdf}
+%\caption{A harmonic ranking from truncated Netflix movie-movie network}
+%\end{figure}
+%\end{column}
+%\end{columns}%
+%}
+%
+%%\frame{
+%%  \frametitle{An Example from Jester Dataset}
+%%  \begin{figure}
+%%  \includegraphics[width=0.9\textwidth]{figures/Hodge-Jester.pdf}
+%%  \caption{Hodge Decomposition for a pairwise ranking on four Jester jokes (No.1 - 4): $\hat{g}_1$ gives
+%%  a global ranking (order: $1>2>3>4$) which accounts for $90\%$ of the total norm; $\hat{g}_2$ is the consistent cyclic part on triangles $\{\{123\},\{124\}\}$ with $7\%$ norm; and $\hat{g}_3$ is the inconsistent cyclic part. }
+%%  \end{figure}
+%%}
+%
+%\frame{
+%  \frametitle{Rank Aggregation as a Linear Projection}
+%\begin{corollary}
+%Every pairwise ranking admits a unique orthogonal decomposition,
+%\[
+%w = \proj_{\im \de_0} w + \proj_{\ker(\de_0^T)} w
+%\]
+%i.e. 
+%\[ \textcolor{red}{pairwise} = \textcolor{red}{grad(global)} + \textcolor{red}{cyclic} \]
+%\end{corollary}
+%Particularly the first projection $\operatorname*{grad}($global$)$ gives a
+%global ranking
+%\[
+%x^{\ast}=(\delta_{0}^{\ast}\delta_{0})^{\dag}\delta_{0}^{\ast}w=-(\Delta
+%_{0})^{\dag}\operatorname*{div}(w)
+%\]
+%which extends the \textcolor{red}{Borda Count} as the best rule in classical social choice and voting theory (Saari).
+%}
+%
+%\frame{
+%  \frametitle{Saari's Geometric Explanation on Different Projections}
+%\begin{figure}
+%%\resizebox{3cm}{!}{\input{figures/harmonic.pstex_t}}
+%\includegraphics[width=0.8\textwidth]{figures/Saari_projection.png}
+%%\caption{A locally consistent but globally cyclic harmonic ranking.}
+%\end{figure}
+%}
+%
+%
+%\frame{
+%  \frametitle{Measuring Inconsistency by Curls}
+%  \begin{definition}
+%Define the \textcolor{red}{cyclicity ratio} of $w$ by  
+%$$ C_p(w)  = \left(\frac{\| \proj_{\im (\curl^*)}  w \| }{\|w \|}\right)^2\leq 1$$
+% \end{definition}
+% 
+%\textcolor{red}{Note}:
+%\begin{itemize}
+%\item This measures the total inconsistency within the data and pairwise ranking model $w$.
+%\item Similarly we can define curls on each triangle.
+%\end{itemize}
+%}
+%
+%\frame{
+%  \frametitle{Model Selection by Cyclicity Ratio (Curls)}
+%\begin{figure}
+%%\resizebox{3cm}{!}{\input{figures/harmonic.pstex_t}}
+%\includegraphics[width=0.9\textwidth]{figures/6movies_comparison.pdf}
+%\caption{MRQE: Movie-Review-Query-Engine (http://www.mrqe.com/)}
+%\end{figure}
+%}
+%
+%%\frame{
+%%  \frametitle{Consistent Decomposition}
+%%\begin{corollary}
+%%(A) A consistent pairwise ranking $g$ associated with $K$, has a unique orthogonal decomposition
+%%\[ g = \proj_{\im \de_0} g + \proj_{H_1} g = \textcolor{red}{\grad(global)+Harmonic} \]
+%%i.e. 
+%%where \textcolor{red}{Harmonic} is cyclic on the ``holes'' of the complex $K$.
+%%(B)  Every consistent pairwise ranking on a contractable $K$, is induced from a global ranking.
+%%\end{corollary}
+%%\textcolor{blue}{Note}:
+%%(B) rephrases the famous theorem in exchange Economics: \textcolor{red}{triangular arbitrage-free} implies \textcolor{red}{arbitrage-free} and the existence of \textcolor{red}{universal equivalent}.
+%%}
+%\frame{
+%\frametitle{Erd\H{o}s-R\'{e}nyi random graph}%
+%%EndExpansion
+%
+%Heuristical justification from Erd\H{o}s-R\'{e}nyi random graphs.
+%
+%\begin{theorem}
+%[Kahle '07]For an Erd\H{o}s-R\'{e}nyi random graph $G(n,p)$ with $n$ vertices
+%and edges forming independently with probability $p$, its clique complex
+%$\chi_{G}$ will have zero $1$-homology almost always, except when
+%\[
+%\frac{1}{n^{2}}\ll p\ll\frac{1}{n}.
+%\]
+%\end{theorem}
+%Since the full Netflix movie-movie comparison graph is almost complete
+%($0.22\%$ missing edges), one may expect the chance of nontrivial harmonic
+%ranking is small.
+%}
+%
+%\subsection{Conclusions}
+%\frame{
+%  \frametitle{Conclusions}
+%  Conclusions
+%  \begin{itemize}
+%  \item Rank Aggregation as \textcolor{red}{1-dimensional scaling} of data
+%  \item Hodge Theory provides an \textcolor{red}{orthogonal decomposition} for pairwise rankings  
+%  \item Such decomposition is helpful to characterize the \textcolor{red}{cyclicity} and \textcolor{red}{inconsistency} of pairwise rankings, as well as natural extension of Borda count as rank aggregation
+%  algorithm
+%  \end{itemize}
+%}
+
+\frame{
+  \frametitle{Reference}
+  \begin{itemize}
+  \item Edelsbrunner, Letscher, and Zomorodian (2002) Topological Persistence and Simplification.   
+  \item Ghrist, R. (2007) Barcdes: the Persistent Topology of Data. \emph{Bulletin of AMS}, 45(1):61-75. 
+  \item Edelsbrunner, Harer (2008) Persistent Homology - a survey. \emph{Contemporary Mathematics}.
+  \item Carlsson, G. (2009) Topology and Data. \emph{Bulletin of AMS}, 46(2):255-308.
+  \item Camara et al. (2016) Topological Data Analysis Generates High-Resolution, Genome-wide Maps of Human Recombination, \emph{Cell Systems}, 3(1): 83–94.
+  \item Wei, Guowei, (2017) Persistent Homology Analysis of Biomolecular Data, \emph{SIAM News}.
+
+  \end{itemize}
+}
+
+\end{document}
+
