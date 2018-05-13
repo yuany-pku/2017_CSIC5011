@@ -1,0 +1,33 @@
+\documentclass{article}
+\usepackage{amsmath,amsthm,amsfonts,amssymb,bm}
+
+\begin{document}
+Consider the Inverse Model, 
+\begin{equation*}
+X_{y} = \mu + \Gamma\nu_{y}+ \varepsilon,
+\end{equation*}
+where $X_{y}\in\mathbb{R}^{p},\nu_{y}\in\mathbb{R}^{d},d<p,$ the basis $\Gamma\in\mathbb{R}^{p\times d}$ with $\Gamma^{T}\Gamma=I_{d}$, and $\varepsilon\sim N_{p}(0,\sigma^2I_{p}).$
+
+The following proposition states under the assumption of inverse model, $\Gamma$ is actually a sufficient reduction. See Cook(2007) for more general case.
+
+\textbf{Proposition:} Under the inverse model, the distribution of $Y|X$ is the same as the distribution of $Y|\Gamma^{T}X$.
+
+\textbf{Proof:} Firstly, $X|Y=y\sim N_{p}(\mu+\Gamma\nu_{y},\sigma^2I_{p})$. By Bayesian formula, we have
+\begin{align*}
+f_{Y|X}(y|x) &\propto f_{X|Y}(x|y)f_{Y}(y)\\
+ 		   &\propto exp(-\frac{1}{2\sigma^2}\|x-\mu-\Gamma\nu_{y}\|^{2})f_{Y}(y)\\
+		   &\propto exp(-\frac{1}{2\sigma^2}(\nu_{y}^{T}\nu_{y}-2\nu_{y}^{T}\Gamma^{T}(x-\mu))f_{Y}(y)
+\end{align*}
+The last line is given by the orthogonality of $\Gamma$. Similarly,
+since $\Gamma^{T}X|Y=y\sim N_{d}(\Gamma^{T}\mu + \nu_{y},\sigma^2I_{d})$, we have
+\begin{align*}
+f_{Y|\Gamma^{T}X}(y|\Gamma^{T}x) &\propto f_{\Gamma^{T}X|Y}(\Gamma^{T}x|y)f_{Y}(y)\\
+			&\propto exp(-\frac{1}{2\sigma^2}\|\Gamma^{T}x-\Gamma^{T}\mu-\nu_{y}\|^{2})f_{Y}(y)\\
+			&\propto exp(-\frac{1}{2\sigma^2}(\nu_{y}^{T}\nu_{y}-2\nu_{y}^{T}\Gamma^{T}(x-\mu))f_{Y}(y)
+\end{align*}
+Therefore, the kernel of $Y|X$ and $Y|\Gamma^{T}X$ are the same, which implies the result.
+
+
+
+
+\end{document}
