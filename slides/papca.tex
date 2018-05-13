@@ -1,0 +1,149 @@
+\hspace{1mm}clear; tic; \\ 
+\hspace{1mm} \\ 
+\hspace{1mm}\textcolor{green}{\% Parallel Analysis Program For Principal Component Analysis }\\ 
+\hspace{1mm}\textcolor{green}{\%   with random normal data simulation or Data Permutations. }\\ 
+\hspace{1mm} \\ 
+\hspace{1mm}\textcolor{green}{\%  This program conducts parallel analyses on data files in which }\\ 
+\hspace{1mm}\textcolor{green}{\%  the rows of the data matrix are cases/individuals and the }\\ 
+\hspace{1mm}\textcolor{green}{\%  columns are variables; There can be no missing values; }\\ 
+\hspace{1mm} \\ 
+\hspace{1mm}\textcolor{green}{\%  You must also specify: }\\ 
+\hspace{1mm}\textcolor{green}{\%   -- ndatsets: the # of parallel data sets \textcolor{blue}{for} the analyses; }\\ 
+\hspace{1mm}\indent \textcolor{green}{\%   -- percent: the desired percentile of the distribution of random }\\ 
+\hspace{1mm}\indent \textcolor{green}{\%      data eigenvalues [percent]; }\\ 
+\hspace{1mm}\indent \textcolor{green}{\%   -- randtype: whether (1) normally distributed random data generation  }\\ 
+\hspace{1mm}\indent \textcolor{green}{\%      or (2) permutations of the raw data set are to be used in the }\\ 
+\hspace{1mm}\indent \textcolor{green}{\%      parallel analyses (default=[2]); }\\ 
+\hspace{1mm}\indent  \\ 
+\hspace{1mm}\indent \textcolor{green}{\%  WARNING: Permutations of the raw data set are time consuming; }\\ 
+\hspace{1mm}\indent \textcolor{green}{\%  Each parallel data set is based on column-wise random shufflings }\\ 
+\hspace{1mm}\indent \textcolor{green}{\%  of the values in the raw data matrix using Castellan's (1992,  }\\ 
+\hspace{1mm}\indent \textcolor{green}{\%  BRMIC, 24, 72-77) algorithm; The distributions of the original  }\\ 
+\hspace{1mm}\indent \textcolor{green}{\%  raw variables are exactly preserved in the shuffled versions used }\\ 
+\hspace{1mm}\indent \textcolor{green}{\%  in the parallel analyses; Permutations of the raw data set are }\\ 
+\hspace{1mm}\indent \textcolor{green}{\%  thus highly accurate and most relevant, especially in cases where }\\ 
+\hspace{1mm}\indent \textcolor{green}{\%  the raw data are not normally distributed or when they do not meet }\\ 
+\hspace{1mm}\indent \textcolor{green}{\%  the assumption of multivariate normality (see Longman \& Holden, }\\ 
+\hspace{1mm}\indent \textcolor{green}{\%  1992, BRMIC, 24, 493, \textcolor{blue}{for} a Fortran version); If you would }\\ 
+\hspace{1mm}\indent \indent \textcolor{green}{\%  like to go this route, it is perhaps best to (1) first run a  }\\ 
+\hspace{1mm}\indent \indent \textcolor{green}{\%  normally distributed random data generation parallel analysis to }\\ 
+\hspace{1mm}\indent \indent \textcolor{green}{\%  familiarize yourself with the program and to get a ballpark }\\ 
+\hspace{1mm}\indent \indent \textcolor{green}{\%  reference point \textcolor{blue}{for} the number of factors/components; }\\ 
+\hspace{1mm}\indent \indent \indent \textcolor{green}{\%  (2) then run a permutations of the raw data parallel analysis }\\ 
+\hspace{1mm}\indent \indent \indent \textcolor{green}{\%  using a small number of datasets (e.g., 10), just to see how long }\\ 
+\hspace{1mm}\indent \indent \indent \textcolor{green}{\%  the program takes to run; then (3) run a permutations of the raw }\\ 
+\hspace{1mm}\indent \indent \indent \textcolor{green}{\%  data parallel analysis using the number of parallel data sets that }\\ 
+\hspace{1mm}\indent \indent \indent \textcolor{green}{\%  you would like use \textcolor{blue}{for} your final analyses; 1000 datasets are  }\\ 
+\hspace{1mm}\indent \indent \indent \indent \textcolor{green}{\%  usually sufficient, although more datasets should be used }\\ 
+\hspace{1mm}\indent \indent \indent \indent \textcolor{green}{\%  \textcolor{blue}{if} there are close calls. }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent  \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent  \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \textcolor{green}{\% The "load" command can be used to read a raw data file }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \textcolor{green}{\% The raw data matrix must be named "raw" }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \textcolor{green}{\% e.g. }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \textcolor{green}{\%   load snp452-data.mat  }\textcolor{green}{\%S\&P500 data: 1258 daily price of 452 stocks }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \textcolor{green}{\%   raw=diff(log(X),1); }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent  \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \textcolor{green}{\%  These next commands generate artificial raw data  }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \textcolor{green}{\%  (500 cases) that can be used \textcolor{blue}{for} a trial-run of }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \textcolor{green}{\%  the program, instead of using your own raw data;  }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \textcolor{green}{\%  Just run this whole file; However, make sure to }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \textcolor{green}{\%  delete these commands before attempting to run your own data. }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent  \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \textcolor{green}{\% Start of artificial data commands. }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent com = randn(500,3); \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent raw = randn(500,9); \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent raw(:,1:3) = raw(:,1:3) + [ com(:,1) com(:,1) com(:,1) ]; \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent raw(:,4:6) = raw(:,4:6) + [ com(:,2) com(:,2) com(:,2) ]; \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent raw(:,7:9) = raw(:,7:9) + [ com(:,3) com(:,3) com(:,3) ]; \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \textcolor{green}{\% End of artificial data commands. }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent  \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent  \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent ndatsets  = 100  ; \textcolor{green}{\% Enter the desired number of parallel data sets here }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent  \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent percent   = 95  ; \textcolor{green}{\% Enter the desired percentile here }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent  \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \textcolor{green}{\% Specify the desired kind of parellel analysis, where: }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \textcolor{green}{\% 1 = principal components analysis }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \textcolor{green}{\% kind = 1 ; }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent  \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \textcolor{green}{\% Enter either }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \textcolor{green}{\%  1 \textcolor{blue}{for} normally distributed random data generation parallel analysis, or }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \textcolor{green}{\%  2 \textcolor{blue}{for} permutations of the raw data set (more time consuming). }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent randtype = 2 ; \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent  \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \textcolor{green}{\%the next command can be used to set the state of the random # generator }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent randn(\textcolor{red}{'state'},1953125) \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent  \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \textcolor{green}{\%}\textcolor{green}{\%}\textcolor{green}{\%}\textcolor{green}{\%}\textcolor{green}{\%}\textcolor{green}{\%}\textcolor{green}{\%}\textcolor{green}{\%}\textcolor{green}{\%}\textcolor{green}{\%}\textcolor{green}{\%}\textcolor{green}{\%}\textcolor{green}{\%}\textcolor{green}{\%}\textcolor{green}{\% End of user specifications }\textcolor{green}{\%}\textcolor{green}{\%}\textcolor{green}{\%}\textcolor{green}{\%}\textcolor{green}{\%}\textcolor{green}{\%}\textcolor{green}{\%}\textcolor{green}{\%}\textcolor{green}{\%}\textcolor{green}{\%}\textcolor{green}{\%}\textcolor{green}{\%}\textcolor{green}{\%}\textcolor{green}{\%}\textcolor{green}{\% }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent  \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent  \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent [ncases,nvars] = size(raw); \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent  \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent evals = []; \textcolor{green}{\% random eigenvalues initialization }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \textcolor{green}{\% principal components analysis \& random normal data generation }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \textcolor{blue}{if} (randtype == 1) \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent realeval = flipud(sort(eig(corrcoef(raw))));    \textcolor{green}{\% better use corrcoef }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \textcolor{blue}{for} nds = 1:ndatsets; evals(:,nds) = eig(corrcoef(randn(ncases,nvars)));end \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \textcolor{blue}{end} \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent  \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \textcolor{green}{\% principal components analysis \& raw data permutation }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \textcolor{blue}{if} (randtype == 2) \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \textcolor{green}{\%realeval = flipud(sort(eig(corrcoef(raw))));    }\textcolor{green}{\% either cov/corrcoef }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent realeval = flipud(sort(eig(cov(raw)))); \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \textcolor{blue}{for} nds = 1:ndatsets;  \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent x = raw; \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \textcolor{blue}{for} lupec = 2:nvars; \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \textcolor{green}{\% Here we use randperm in matlabl }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent x(:,lupec) = x(randperm(ncases),lupec); \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \textcolor{green}{\% Below is column-wise random shufflings }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \textcolor{green}{\%  of the values in the raw data matrix using Castellan's (1992,  }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \textcolor{green}{\%  BRMIC, 24, 72-77) algorithm; }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \textcolor{green}{\% }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \textcolor{green}{\%for luper = 1:(ncases -1); }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \textcolor{green}{\%k = fix( (ncases - luper + 1) * rand(1) + 1 )  + luper - 1; }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \textcolor{green}{\%d = x(luper,lupec); }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \textcolor{green}{\%x(luper,lupec) = x(k,lupec); }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \textcolor{green}{\%x(k,lupec) = d;end;end; }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \textcolor{blue}{end} \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \textcolor{green}{\%evals(:,nds) = eig(corrcoef(x));   }\textcolor{green}{\% either cov/corrcoef }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent evals(:,nds) = eig(cov(x)); \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent end;end \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent  \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent evals = flipud(sort(evals,1)); \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent means = (mean(evals,2));   \textcolor{green}{\% mean eigenvalues \textcolor{blue}{for} each position. }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent evals = sort(evals,2);     \textcolor{green}{\% sorting the eigenvalues \textcolor{blue}{for} each position. }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent percentiles = (evals(:,round((percent*ndatsets)/100)));  \textcolor{green}{\% percentiles. }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent pvals = sum(evals$>$(realeval*ones(1,ndatsets)),2)/ndatsets; \textcolor{green}{\% p-values of observed random eigenvalues greater than real eigenvalues }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent  \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent format short \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent disp([\textcolor{red}{' '}]);disp([\textcolor{red}{'PARALLEL ANALYSIS '}]); disp([\textcolor{red}{' '}]) \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \textcolor{blue}{if} (randtype == 1); \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent disp([\textcolor{red}{'Principal Components Analysis \& Random Normal Data Generation'} ]);disp([\textcolor{red}{' '}]);end \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \textcolor{blue}{if} (randtype == 2); \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent disp([\textcolor{red}{'Principal Components Analysis \& Raw Data Permutation'} ]);disp([\textcolor{red}{' '}]);end \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent disp([\textcolor{red}{'Variables  = '} num2str(nvars) ]); \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent disp([\textcolor{red}{'Cases      = '} num2str(ncases) ]); \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent disp([\textcolor{red}{'Datsets    = '} num2str(ndatsets) ]); \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent disp([\textcolor{red}{'Percentile = '} num2str(percent) ]); disp([\textcolor{red}{' '}]) \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent disp([\textcolor{red}{'Raw Data Eigenvalues, \& Mean \& Percentile Random Data Eigenvalues'}]);disp([\textcolor{red}{' '}]) \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent disp([\textcolor{red}{'      Root   Raw Data   P-values    Means   Percentiles'} ]) \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent disp([(1:nvars).'  realeval  pvals means  percentiles]); \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent  \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent  \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent plot ( (1:nvars).',[realeval means  percentiles],\textcolor{red}{'-*'}) \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent xlabel(\textcolor{red}{'Index'}); ylabel(\textcolor{red}{'Eigenvalues'}); title (\textcolor{red}{'Real and Random-Data Eigenvalues'}) \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent set(get(gca,\textcolor{red}{'YLabel'}),\textcolor{red}{'Rotation'},90.0) \textcolor{green}{\% \textcolor{blue}{for} the rotation of the YLabel }\\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent set(gca,\textcolor{red}{'XTick'}, 1:nvars) \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent set(gca,\textcolor{red}{'FontName'},\textcolor{red}{'Times'}, \textcolor{red}{'FontSize'},16, \textcolor{red}{'fontweight'}, \textcolor{red}{'normal'} ); \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent legend(\textcolor{red}{'real data eigenvalues'},\textcolor{red}{'mean random eigenvalues'},sprintf(\textcolor{red}{'}\textcolor{green}{\%d}\textcolor{green}{\%}\textcolor{green}{\% percentile random eigenvalues'},percent)); legend boxoff;  \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent textobj = findobj(\textcolor{red}{'type'}, \textcolor{red}{'text'}); set(textobj, \textcolor{red}{'fontunits'}, \textcolor{red}{'points'});  \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent set(textobj,\textcolor{red}{'FontName'},\textcolor{red}{'Times'}, \textcolor{red}{'fontsize'}, 16); set(textobj, \textcolor{red}{'fontweight'}, \textcolor{red}{'normal'}); \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent  \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent  \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent  \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent disp([\textcolor{red}{'time for this problem = '}, num2str(toc) ]); disp([\textcolor{red}{' '}]) \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent  \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent  \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent  \\ 
+\hspace{1mm}\indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent \indent  \\ 
